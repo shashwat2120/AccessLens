@@ -27,6 +27,11 @@ class Settings(BaseSettings):
 
     max_upload_mb: int = Field(default=10, ge=1)
     max_batch_files: int = Field(default=20, ge=1)
+    max_zip_entries: int = Field(default=2000, ge=1)
+    max_uncompressed_mb: int = Field(default=100, ge=1)
+    max_compression_ratio: int = Field(default=100, ge=1)
+    parse_timeout_s: float = Field(default=15.0, gt=0)
+    parse_memory_mb: int = Field(default=512, ge=64)
     target_grade: int = Field(default=9, ge=1, le=18)
     rate_limit: str = "20/minute"
     cors_origins: str = ""

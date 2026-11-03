@@ -3,18 +3,10 @@ import re
 from collections import Counter
 from pathlib import Path
 
-import pytest
 from docx import Document
 from generate_corpus import generate
 
 ROOT = Path(__file__).resolve().parents[2]
-
-
-@pytest.fixture(scope="module")
-def corpus(tmp_path_factory: pytest.TempPathFactory) -> tuple[Path, Path]:
-    base = tmp_path_factory.mktemp("corpus")
-    generate(base / "docs", base / "key.csv")
-    return base / "docs", base / "key.csv"
 
 
 def read_key(path: Path) -> list[dict[str, str]]:
