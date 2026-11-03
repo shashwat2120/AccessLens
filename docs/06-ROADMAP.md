@@ -28,12 +28,12 @@ Current phase: **Phase 0**
 **DoD:** corpus regenerates from one command; every rule ID has ≥ 3 planted instances.
 
 ## Phase 2 — Secure ingest & parser (Days 6–10)
-- [ ] `models.py` (TRD §3)
-- [ ] `ingest/validate.py` — all checks in SECURITY §3
-- [ ] `ingest/sandbox.py` — subprocess, timeout, memory limit
-- [ ] `ingest/parse_docx.py` — blocks, headings, runs, images (alt, decorative, inline/anchor), tables, links, meta
-- [ ] Security fixtures + tests (zip bomb, XXE, billion laughs, docm, zip-slip, oversize, external links)
-- [ ] Hypothesis fuzz test for parser
+- [x] `models.py` (TRD §3)
+- [x] `ingest/validate.py` — all checks in SECURITY §3
+- [x] `ingest/sandbox.py` — subprocess, timeout, memory limit (memory limit POSIX only; see ADR-010)
+- [x] `ingest/parse_docx.py` — blocks, headings, runs, images (alt, decorative, inline/anchor), tables, links, meta
+- [x] Security fixtures + tests (zip bomb, XXE, billion laughs, docm, zip-slip, oversize, external links)
+- [x] Hypothesis fuzz test for parser
 
 **DoD:** every corpus doc parses to valid `ParsedDocument`; `tests/security` green.
 
