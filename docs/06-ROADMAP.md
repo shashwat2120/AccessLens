@@ -20,9 +20,9 @@ Current phase: **Phase 0**
 **DoD:** empty package installs, `pytest` runs, CI green on first PR.
 
 ## Phase 1 — Eval corpus & answer key (Days 3–5)
-- [ ] `eval/generate_corpus.py` — 30 synthetic docs with planted issues covering every rule
-- [ ] 5 clean control docs, 5 injection docs
-- [ ] `answer_key.csv` generated alongside the corpus
+- [x] `eval/generate_corpus.py` — 30 synthetic docs with planted issues covering every rule
+- [x] 5 clean control docs, 5 injection docs
+- [x] `answer_key.csv` generated alongside the corpus
 - [ ] Collect 5–10 openly licensed real docs, label by hand, record sources
 
 **DoD:** corpus regenerates from one command; every rule ID has ≥ 3 planted instances.

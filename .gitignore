@@ -13,4 +13,5 @@ dist/
 build/
 *.egg-info/
 eval/results/tmp/
+eval/corpus/
 .DS_Store
