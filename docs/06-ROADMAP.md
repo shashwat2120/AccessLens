@@ -3,7 +3,7 @@
 **Status:** Living document — tick boxes as you go. **Start:** 2026-11-03
 Estimated ~5 weeks at a few hours a day. Each phase ends with a **Definition of Done (DoD)**; don't start the next phase until the DoD is met.
 
-Current phase: **Phase 0**
+Current phase: **Phase 3** (Phases 0-2 complete except the open items: branch protection and API keys in Phase 0, real-world documents in Phase 1)
 
 ---
 
@@ -38,11 +38,11 @@ Current phase: **Phase 0**
 **DoD:** every corpus doc parses to valid `ParsedDocument`; `tests/security` green.
 
 ## Phase 3 — Rule engine (Days 11–15)
-- [ ] `rules/base.py` registry + `Finding` builder
-- [ ] Implement all rule-based checks in `04-RULES-CATALOG.md`
-- [ ] Unit tests: pass + fail fixture per rule
-- [ ] `report/prioritize.py`, `report/score.py`
-- [ ] `eval/run_eval.py` (rules-only) wired into CI
+- [x] `rules/base.py` registry + `Finding` builder
+- [x] Implement all rule-based checks in `04-RULES-CATALOG.md`
+- [x] Unit tests: pass + fail fixture per rule
+- [x] `report/prioritize.py`, `report/score.py`
+- [x] `eval/run_eval.py` (rules-only) wired into CI
 
 **DoD:** rule recall ≥ 98%, precision ≥ 95% on corpus; CI enforces it.
 
