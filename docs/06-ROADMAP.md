@@ -1,0 +1,98 @@
+# 06 — Roadmap & Build Checklist
+
+**Status:** Living document — tick boxes as you go. **Start:** 2026-11-03
+Estimated ~5 weeks at a few hours a day. Each phase ends with a **Definition of Done (DoD)**; don't start the next phase until the DoD is met.
+
+Current phase: **Phase 0**
+
+---
+
+## Phase 0 — Project setup (Days 1–2)
+- [ ] Create GitHub repo `accesslens` (public), add MIT LICENSE
+- [ ] Copy `docs/`, `CLAUDE.md`, `README.md` into the repo
+- [ ] `uv init`, Python 3.12, `src/` layout per TRD §9
+- [ ] Add ruff, mypy, pytest, pre-commit (ruff, mypy, gitleaks, bandit)
+- [x] `.gitignore`, `.env.example`, `config.py` with pydantic-settings
+- [ ] CI workflow: lint, type-check, test, pip-audit, gitleaks
+- [ ] Branch protection on `main`
+- [ ] Get Gemini API key (Google AI Studio) and Groq key; store in `.env` only; record model names + free limits in `08-DECISIONS.md`
+
+**DoD:** empty package installs, `pytest` runs, CI green on first PR.
+
+## Phase 1 — Eval corpus & answer key (Days 3–5)
+- [ ] `eval/generate_corpus.py` — 30 synthetic docs with planted issues covering every rule
+- [ ] 5 clean control docs, 5 injection docs
+- [ ] `answer_key.csv` generated alongside the corpus
+- [ ] Collect 5–10 openly licensed real docs, label by hand, record sources
+
+**DoD:** corpus regenerates from one command; every rule ID has ≥ 3 planted instances.
+
+## Phase 2 — Secure ingest & parser (Days 6–10)
+- [ ] `models.py` (TRD §3)
+- [ ] `ingest/validate.py` — all checks in SECURITY §3
+- [ ] `ingest/sandbox.py` — subprocess, timeout, memory limit
+- [ ] `ingest/parse_docx.py` — blocks, headings, runs, images (alt, decorative, inline/anchor), tables, links, meta
+- [ ] Security fixtures + tests (zip bomb, XXE, billion laughs, docm, zip-slip, oversize, external links)
+- [ ] Hypothesis fuzz test for parser
+
+**DoD:** every corpus doc parses to valid `ParsedDocument`; `tests/security` green.
+
+## Phase 3 — Rule engine (Days 11–15)
+- [ ] `rules/base.py` registry + `Finding` builder
+- [ ] Implement all rule-based checks in `04-RULES-CATALOG.md`
+- [ ] Unit tests: pass + fail fixture per rule
+- [ ] `report/prioritize.py`, `report/score.py`
+- [ ] `eval/run_eval.py` (rules-only) wired into CI
+
+**DoD:** rule recall ≥ 98%, precision ≥ 95% on corpus; CI enforces it.
+
+## Phase 4 — LLM checks (Days 16–20)
+- [ ] `llm/provider.py` (Gemini primary, Groq fallback, config-driven)
+- [ ] `llm/redact.py` (PII redaction) + tests
+- [ ] Prompts v1 for IMG-003 (vision), TXT-001/002 rewrites, LNK-003, TXT-006
+- [ ] Batching, structured output, schema validation, allowed-rule enforcement
+- [ ] Retry/backoff, fallback, degraded mode, budget, cache
+- [ ] Injection eval passes (0 successes)
+- [ ] LLM eval run; record agreement %
+
+**DoD:** LLM agreement ≥ 80%; injection 0; an LLM outage still returns a rules-only report with a warning.
+
+## Phase 5 — LangGraph pipeline & service (Days 21–23)
+- [ ] `agent/state.py`, `nodes.py`, `graph.py` with rules-only conditional edge
+- [ ] `service.py` — `AuditService.audit()` single entry point
+- [ ] Integration tests over the corpus
+- [ ] Structured logging (no content) + per-node timings
+
+**DoD:** `AuditService` produces full reports for the whole corpus in both modes.
+
+## Phase 6 — Interfaces (Days 24–28)
+- [ ] CLI with exit codes
+- [ ] FastAPI: routes, API key auth, rate limits, size limits, problem+json errors, security headers, CORS
+- [ ] HTML report (autoescape, CSP) and XLSX export (formula-injection safe)
+- [ ] MCP server: `audit_docx`, `list_rules`, `explain_rule`; path allowlist; tested with Claude Desktop/Claude Code
+- [ ] Streamlit UI: privacy notice, rules-only toggle, upload, report view, downloads
+
+**DoD:** all four interfaces audit the same file and return identical findings.
+
+## Phase 7 — Production hardening & deploy (Days 29–33)
+- [ ] Dockerfile (multi-stage, non-root, pinned base, read-only FS)
+- [ ] Trivy scan in CI
+- [ ] Deploy API + UI (Hugging Face Spaces or Render), HTTPS, prod config
+- [ ] Complete SECURITY §11 checklist
+- [ ] Load test: 10 concurrent rules-only audits
+- [ ] Repo-root `SECURITY.md`, `CHANGELOG.md`
+
+**DoD:** public demo live; security checklist fully ticked.
+
+## Phase 8 — Portfolio polish (Days 34–36)
+- [ ] README: problem, demo GIF, architecture diagram, results table, privacy note, how to run, limitations
+- [ ] Final eval run published in `eval/results/`
+- [ ] Short write-up / LinkedIn post: design decisions and what you learned
+- [ ] Tag `v1.0.0`
+
+**DoD:** someone new can understand, run, and trust the project in 5 minutes.
+
+---
+
+## Later (v2 ideas — not now)
+- PDF support · PowerPoint support · auto-fix mode that writes a corrected .docx · checking against a course standard (curriculum gap idea) · Hindi/Indian-language readability · GitHub Action for docs repos.
