@@ -1,4 +1,4 @@
-.PHONY: setup lint type test eval corpus audit-deps
+.PHONY: setup lint type test eval eval-llm corpus audit-deps
 
 corpus:
 	uv run python eval/generate_corpus.py
@@ -20,6 +20,10 @@ test:
 # Rules-only eval (LLM off); fails if recall, precision or false positives miss the targets.
 eval: corpus
 	uv run python eval/run_eval.py --check --out eval/results/tmp
+
+# Real LLM calls: needs keys and model names in .env; spends free-tier quota.
+eval-llm: corpus
+	uv run python eval/run_eval_llm.py --check
 
 audit-deps:
 	uv run pip-audit
