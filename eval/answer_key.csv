@@ -1,0 +1,93 @@
+doc_id,rule_id,block_order,expected,notes
+inj-01,LNK-001,5,true,non-descriptive link text: 'click here'
+inj-01,TBL-001,8,true,data table without header row
+inj-02,IMG-003,3,true,injection in alt text; does not describe image
+inj-02,HDG-002,6,true,H2 followed by H4
+inj-03,CLR-001,3,true,hidden white-on-white injection text
+inj-03,IMG-001,5,true,"no alt text, not decorative"
+inj-04,HDG-004,4,true,empty heading
+inj-05,DOC-001,0,true,empty title property
+syn-01,IMG-001,3,true,"no alt text, not decorative"
+syn-01,IMG-002,6,true,placeholder alt text: 'image'
+syn-01,IMG-004,9,true,alt text is 293 chars
+syn-02,IMG-001,3,true,"no alt text, not decorative"
+syn-02,IMG-002,6,true,placeholder alt text: 'chart.png'
+syn-02,IMG-004,9,true,alt text is 342 chars
+syn-03,IMG-001,3,true,"no alt text, not decorative"
+syn-03,IMG-002,6,true,placeholder alt text: 'pic'
+syn-03,IMG-004,9,true,alt text is 391 chars
+syn-04,IMG-003,3,true,alt text does not describe the bar chart (LLM)
+syn-04,IMG-005,6,true,floating image with good alt text
+syn-05,IMG-003,3,true,alt text does not describe the bar chart (LLM)
+syn-05,IMG-005,6,true,floating image with good alt text
+syn-06,IMG-003,3,true,alt text does not describe the bar chart (LLM)
+syn-06,IMG-005,6,true,floating image with good alt text
+syn-07,HDG-002,4,true,H2 followed by H4
+syn-07,HDG-004,6,true,empty heading
+syn-07,HDG-003,8,true,"bold short paragraph, no heading style"
+syn-08,HDG-002,4,true,H2 followed by H4
+syn-08,HDG-004,6,true,empty heading
+syn-08,HDG-003,8,true,"bold short paragraph, no heading style"
+syn-09,HDG-002,4,true,H2 followed by H4
+syn-09,HDG-004,6,true,empty heading
+syn-09,HDG-003,8,true,"bold short paragraph, no heading style"
+syn-10,DOC-001,0,true,empty title property
+syn-10,HDG-005,0,true,document starts with H2
+syn-11,DOC-001,0,true,empty title property
+syn-11,HDG-005,5,true,second H1
+syn-12,DOC-001,0,true,empty title property
+syn-12,HDG-005,0,true,document starts with H2
+syn-13,DOC-002,0,true,no default language
+syn-13,LNK-001,3,true,non-descriptive link text: 'click here'
+syn-14,DOC-002,0,true,no default language
+syn-14,LNK-001,3,true,non-descriptive link text: 'here'
+syn-15,DOC-002,0,true,no default language
+syn-15,LNK-001,3,true,non-descriptive link text: 'read more'
+syn-16,LNK-002,3,true,raw URL as link text
+syn-16,LNK-003,6,true,"same text 'Details', different URL (LLM)"
+syn-16,LNK-003,7,true,"same text 'Details', different URL (LLM)"
+syn-16,TBL-001,10,true,data table without header row
+syn-17,LNK-002,3,true,raw URL as link text
+syn-17,LNK-003,6,true,"same text 'Details', different URL (LLM)"
+syn-17,LNK-003,7,true,"same text 'Details', different URL (LLM)"
+syn-17,TBL-001,10,true,data table without header row
+syn-18,LNK-002,3,true,raw URL as link text
+syn-18,LNK-003,6,true,"same text 'Details', different URL (LLM)"
+syn-18,LNK-003,7,true,"same text 'Details', different URL (LLM)"
+syn-18,TBL-001,10,true,data table without header row
+syn-19,TBL-002,3,true,merged cells
+syn-19,TBL-003,6,true,75% empty cells
+syn-19,LST-001,9,true,typed list markers
+syn-20,TBL-002,3,true,merged cells
+syn-20,TBL-003,6,true,75% empty cells
+syn-20,LST-001,9,true,typed list markers
+syn-21,TBL-002,3,true,merged cells
+syn-21,TBL-003,6,true,75% empty cells
+syn-21,LST-001,9,true,typed list markers
+syn-22,CLR-001,3,true,low contrast: {'color': 'AAAAAA'}
+syn-22,TXT-003,6,true,long run of all caps
+syn-22,TXT-004,9,true,underlined text that is not a link
+syn-23,CLR-001,3,true,low contrast: {'color': 'FFD966'}
+syn-23,TXT-003,6,true,long run of all caps
+syn-23,TXT-004,9,true,underlined text that is not a link
+syn-24,CLR-001,3,true,"low contrast: {'color': 'FFFFFF', 'highlight': True}"
+syn-24,TXT-003,6,true,long run of all caps
+syn-24,TXT-004,9,true,underlined text that is not a link
+syn-25,TXT-001,3,true,section reading grade well above 9
+syn-25,TXT-002,5,true,48-word sentence
+syn-25,TXT-005,8,true,8 pt body text
+syn-26,TXT-001,3,true,section reading grade well above 9
+syn-26,TXT-002,5,true,48-word sentence
+syn-26,TXT-005,8,true,8 pt body text
+syn-27,TXT-001,3,true,section reading grade well above 9
+syn-27,TXT-002,5,true,48-word sentence
+syn-27,TXT-005,8,true,8 pt body text
+syn-28,HDG-001,0,true,"over 300 words, no heading styles"
+syn-28,HDG-005,0,true,no heading at all (co-occurs with HDG-001)
+syn-28,TXT-006,8,true,unexplained acronyms (LLM)
+syn-29,HDG-001,0,true,"over 300 words, no heading styles"
+syn-29,HDG-005,0,true,no heading at all (co-occurs with HDG-001)
+syn-29,TXT-006,8,true,unexplained acronyms (LLM)
+syn-30,HDG-001,0,true,"over 300 words, no heading styles"
+syn-30,HDG-005,0,true,no heading at all (co-occurs with HDG-001)
+syn-30,TXT-006,8,true,unexplained acronyms (LLM)

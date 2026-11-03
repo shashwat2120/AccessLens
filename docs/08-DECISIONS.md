@@ -57,3 +57,9 @@ Short records of important choices: context, decision, consequences. Add new ent
 **Date:** 2026-11-03 · **Status:** Accepted
 **Decision:** uv with a committed lockfile.
 **Consequences:** Fast, reproducible installs in CI and Docker.
+
+## ADR-009 — Eval corpus is generated, not committed; python-docx is a dev dependency
+**Date:** 2026-11-03 · **Status:** Accepted
+**Context:** The corpus (30 synthetic, 5 clean, 5 injection .docx) must regenerate from one command, and the answer key must stay in step with it.
+**Decision:** `eval/generate_corpus.py` builds the documents with python-docx (dev dependency until Phase 2) from a fixed seed. `eval/answer_key.csv` is committed; `eval/corpus/` is git-ignored. `block_order` is the 0-based index of a body-level paragraph or table. Documents with no heading styles also list HDG-005, since they cannot start with H1/Title. The "image containing written instructions" injection is approximated with a payload in the image title attribute.
+**Consequences:** Reviewable answer-key diffs and no binaries in git. Document bytes are not identical across runs (zip timestamps), but content and key are. The key encodes expectations before any rule exists, so Phase 3 may show the key or a rule is wrong; fix whichever is wrong in the same change.

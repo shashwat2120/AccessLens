@@ -1,4 +1,7 @@
-.PHONY: setup lint type test eval audit-deps
+.PHONY: setup lint type test eval corpus audit-deps
+
+corpus:
+	uv run python eval/generate_corpus.py
 
 setup:
 	uv sync
