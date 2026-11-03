@@ -23,6 +23,19 @@ class Settings(BaseSettings):
     llm_model_fallback: str = ""
     llm_budget_per_doc: int = Field(default=10, ge=0)
     llm_enabled: bool = True
+    llm_primary_supports_vision: bool = True
+    llm_fallback_supports_vision: bool = False
+    llm_batch_size: int = Field(default=8, ge=1)
+    llm_vision_batch_size: int = Field(default=4, ge=1)
+    llm_max_image_mb: int = Field(default=4, ge=1)
+    llm_max_item_chars: int = Field(default=600, ge=50)
+    llm_timeout_s: float = Field(default=30.0, gt=0)
+    llm_max_retries: int = Field(default=2, ge=0)
+    llm_backoff_base_s: float = Field(default=1.0, ge=0)
+    llm_requests_per_minute: int = Field(default=10, ge=1)
+    llm_concurrency: int = Field(default=2, ge=1)
+    llm_cache_size: int = Field(default=512, ge=0)
+    llm_min_confidence: float = Field(default=0.5, ge=0, le=1)
     pii_redaction: bool = True
 
     max_upload_mb: int = Field(default=10, ge=1)

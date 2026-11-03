@@ -47,13 +47,13 @@ Current phase: **Phase 3** (Phases 0-2 complete except the open items: branch pr
 **DoD:** rule recall ≥ 98%, precision ≥ 95% on corpus; CI enforces it.
 
 ## Phase 4 — LLM checks (Days 16–20)
-- [ ] `llm/provider.py` (Gemini primary, Groq fallback, config-driven)
-- [ ] `llm/redact.py` (PII redaction) + tests
-- [ ] Prompts v1 for IMG-003 (vision), TXT-001/002 rewrites, LNK-003, TXT-006
-- [ ] Batching, structured output, schema validation, allowed-rule enforcement
-- [ ] Retry/backoff, fallback, degraded mode, budget, cache
-- [ ] Injection eval passes (0 successes)
-- [ ] LLM eval run; record agreement %
+- [x] `llm/provider.py` (Gemini primary, Groq fallback, config-driven)
+- [x] `llm/redact.py` (PII redaction) + tests
+- [x] Prompts v1 for IMG-003 (vision), TXT-001/002 rewrites, LNK-003, TXT-006
+- [x] Batching, structured output, schema validation, allowed-rule enforcement
+- [x] Retry/backoff, fallback, degraded mode, budget, cache
+- [ ] Injection eval passes (0 successes) — `make eval-llm` is written and tested with a fake model; needs real keys
+- [ ] LLM eval run; record agreement % — needs real keys and model names in `.env`
 
 **DoD:** LLM agreement ≥ 80%; injection 0; an LLM outage still returns a rules-only report with a warning.
 

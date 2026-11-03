@@ -233,6 +233,34 @@ def _is_merged(cell: Any) -> bool:
     return span is not None and int(span.get(qn("w:val"), 1)) > 1
 
 
+def extract_image_blobs(data: bytes) -> dict[str, bytes]:
+    """Embedded image bytes keyed by ``ImageInfo.id``; linked (external) images are absent.
+
+    Ids follow the same document-order counter as ``parse_docx``. The bytes exist only for the
+    request, to feed vision checks, and never reach the report.
+    """
+    try:
+        doc = Document(io.BytesIO(data))
+        blobs: dict[str, bytes] = {}
+        count = 0
+        for element in doc.element.body.iterchildren():
+            if element.tag not in (qn("w:p"), qn("w:tbl")):
+                continue
+            for drawing in element.iter(qn("wp:inline"), qn("wp:anchor")):
+                image_id = f"i{count:03d}"
+                count += 1
+                blip = drawing.find(".//" + qn("a:blip"))
+                rel_id = blip.get(qn("r:embed")) if blip is not None else None
+                part = doc.part.related_parts.get(rel_id) if rel_id else None
+                if part is not None:
+                    blobs[image_id] = part.blob
+        return blobs
+    except AccessLensError:
+        raise
+    except Exception as exc:
+        raise ParseFailedError from exc
+
+
 def _default_language(doc: DocxDocument) -> str | None:
     values = doc.styles.element.xpath("w:docDefaults/w:rPrDefault/w:rPr/w:lang/@w:val")
     return str(values[0]) if values else None

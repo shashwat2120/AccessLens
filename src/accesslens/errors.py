@@ -30,6 +30,14 @@ class MacroEnabledError(AccessLensError):
     default_message = "Macro-enabled documents are not accepted."
 
 
+class LlmUnavailableError(AccessLensError):
+    """Internal: the LLM layer cannot be used. Audits degrade to rules-only instead of failing."""
+
+    code = "llm_unavailable"
+    status = 503
+    default_message = "AI review is unavailable."
+
+
 class ParseFailedError(AccessLensError):
     code = "parse_failed"
     status = 422
