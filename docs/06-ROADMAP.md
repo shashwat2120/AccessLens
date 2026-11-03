@@ -3,7 +3,7 @@
 **Status:** Living document — tick boxes as you go. **Start:** 2026-11-03
 Estimated ~5 weeks at a few hours a day. Each phase ends with a **Definition of Done (DoD)**; don't start the next phase until the DoD is met.
 
-Current phase: **Phase 6** (Phases 0-5 complete except the open items: branch protection and API keys in Phase 0, real-world documents in Phase 1, and the real-model injection and agreement evals in Phase 4)
+Current phase: **Phase 7** (Phases 0-6 complete except the open items: branch protection and API keys in Phase 0, real-world documents in Phase 1, and the real-model injection and agreement evals in Phase 4)
 
 ---
 
@@ -66,11 +66,11 @@ Current phase: **Phase 6** (Phases 0-5 complete except the open items: branch pr
 **DoD:** `AuditService` produces full reports for the whole corpus in both modes.
 
 ## Phase 6 — Interfaces (Days 24–28)
-- [ ] CLI with exit codes
-- [ ] FastAPI: routes, API key auth, rate limits, size limits, problem+json errors, security headers, CORS
-- [ ] HTML report (autoescape, CSP) and XLSX export (formula-injection safe)
-- [ ] MCP server: `audit_docx`, `list_rules`, `explain_rule`; path allowlist; tested with Claude Desktop/Claude Code
-- [ ] Streamlit UI: privacy notice, rules-only toggle, upload, report view, downloads
+- [x] CLI with exit codes
+- [x] FastAPI: routes, API key auth, rate limits, size limits, problem+json errors, security headers, CORS
+- [x] HTML report (autoescape, CSP) and XLSX export (formula-injection safe)
+- [ ] MCP server: `audit_docx`, `list_rules`, `explain_rule`; path allowlist; tested with Claude Desktop/Claude Code — built and covered by automated tests; still to try by hand in Claude Desktop or Claude Code
+- [x] Streamlit UI: privacy notice, rules-only toggle, upload, report view, downloads
 
 **DoD:** all four interfaces audit the same file and return identical findings.
 

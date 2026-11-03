@@ -1,4 +1,13 @@
-.PHONY: setup lint type test eval eval-llm corpus audit-deps
+.PHONY: setup lint type test eval eval-llm corpus audit-deps run-api run-ui run-mcp
+
+run-api:
+	uv run uvicorn --factory accesslens.api.main:app_factory --host 127.0.0.1 --port 8000
+
+run-ui:
+	uv run streamlit run ui/streamlit_app.py
+
+run-mcp:
+	uv run python -m accesslens.mcp_server.server
 
 corpus:
 	uv run python eval/generate_corpus.py

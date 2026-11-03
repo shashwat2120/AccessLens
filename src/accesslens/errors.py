@@ -30,6 +30,24 @@ class MacroEnabledError(AccessLensError):
     default_message = "Macro-enabled documents are not accepted."
 
 
+class UnauthorizedError(AccessLensError):
+    code = "unauthorized"
+    status = 401
+    default_message = "A valid API key is required."
+
+
+class RateLimitedError(AccessLensError):
+    code = "rate_limited"
+    status = 429
+    default_message = "Too many requests. Try again later."
+
+
+class InvalidRequestError(AccessLensError):
+    code = "invalid_request"
+    status = 400
+    default_message = "The request is not valid."
+
+
 class LlmUnavailableError(AccessLensError):
     """Internal: the LLM layer cannot be used. Audits degrade to rules-only instead of failing."""
 
