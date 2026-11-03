@@ -6,6 +6,7 @@ timeout applies everywhere.
 """
 
 import os
+
 # Fixed argv, no shell; document bytes go to the child over stdin only.
 import subprocess  # nosec B404
 import sys
