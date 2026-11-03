@@ -5,6 +5,9 @@ The memory limit uses ``resource.setrlimit`` and is therefore enforced on POSIX 
 timeout applies everywhere.
 """
 
+import base64
+import binascii
+import json
 import os
 
 # Fixed argv, no shell; document bytes go to the child over stdin only.
@@ -25,15 +28,14 @@ def _child_env() -> dict[str, str]:
     return {key: os.environ[key] for key in _KEEP_ENV if key in os.environ}
 
 
-def parse_in_sandbox(data: bytes, settings: Settings | None = None) -> ParsedDocument:
-    """Validate and parse ``data`` in a subprocess; any failure becomes ``ParseFailedError``."""
-    cfg = settings or get_settings()
+def _run_worker(data: bytes, cfg: Settings, *extra: str) -> bytes:
     command = [
         sys.executable,
         "-I",
         "-m",
         "accesslens.ingest.worker",
         str(cfg.parse_memory_mb),
+        *extra,
     ]
     try:
         result = subprocess.run(  # noqa: S603  # nosec B603
@@ -48,7 +50,27 @@ def parse_in_sandbox(data: bytes, settings: Settings | None = None) -> ParsedDoc
         raise ParseFailedError from exc
     if result.returncode != 0:
         raise ParseFailedError
+    return result.stdout
+
+
+def parse_in_sandbox(data: bytes, settings: Settings | None = None) -> ParsedDocument:
+    """Validate and parse ``data`` in a subprocess; any failure becomes ``ParseFailedError``."""
+    output = _run_worker(data, settings or get_settings(), "parse")
     try:
-        return ParsedDocument.model_validate_json(result.stdout)
+        return ParsedDocument.model_validate_json(output)
     except ValidationError as exc:
+        raise ParseFailedError from exc
+
+
+def extract_images_in_sandbox(data: bytes, settings: Settings | None = None) -> dict[str, bytes]:
+    """Embedded image bytes by ``ImageInfo.id``, extracted in the sandbox.
+
+    Images over ``LLM_MAX_IMAGE_MB`` are left out here, so they are never sent to the parent.
+    """
+    cfg = settings or get_settings()
+    output = _run_worker(data, cfg, "images", str(cfg.llm_max_image_mb * 1024 * 1024))
+    try:
+        encoded = json.loads(output)
+        return {key: base64.b64decode(value, validate=True) for key, value in encoded.items()}
+    except (ValueError, TypeError, AttributeError, binascii.Error) as exc:
         raise ParseFailedError from exc

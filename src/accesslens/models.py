@@ -100,6 +100,13 @@ class ParsedDocument(BaseModel):
     links: list[LinkInfo]
 
 
+class AuditOptions(BaseModel):
+    """What a caller may choose per audit; everything else is server configuration."""
+
+    mode: Literal["full", "rules_only"] = "full"
+    target_grade: int | None = Field(default=None, ge=1, le=18)
+
+
 class Location(BaseModel):
     block_id: str
     block_order: int
