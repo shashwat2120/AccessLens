@@ -17,9 +17,9 @@ type:
 test:
 	uv run pytest --cov
 
-# Rules-only eval arrives in Phase 3.
-eval:
-	@echo "eval: not implemented until Phase 3"
+# Rules-only eval (LLM off); fails if recall, precision or false positives miss the targets.
+eval: corpus
+	uv run python eval/run_eval.py --check --out eval/results/tmp
 
 audit-deps:
 	uv run pip-audit

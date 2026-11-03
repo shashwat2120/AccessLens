@@ -5,7 +5,7 @@
 ## Code
 - Python 3.12, fully type-hinted; `mypy --strict` passes.
 - `ruff` for lint + format (rules: E, F, I, B, UP, S, SIM, RUF).
-- Small pure functions; rules are `(ParsedDocument, RuleConfig) -> list[Finding]` with no I/O.
+- Small pure functions; a rule's check is `(ParsedDocument, RuleConfig) -> list[Hit]` with no I/O; `Rule.run` turns hits into `Finding`s (ADR-011).
 - No business logic in `api/`, `cli.py`, `mcp_server/`, or `ui/` — they call `AuditService`.
 - No hard-coded model names, limits, keys, or URLs — everything via `config.py`.
 - Errors: raise typed exceptions from `errors.py`; map to problem+json in one place.

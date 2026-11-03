@@ -22,6 +22,8 @@ jobs:
       - run: uv run ruff format --check .
       - run: uv run mypy
       - run: uv run pytest --cov
+      - run: uv run python eval/generate_corpus.py
+      - run: uv run python eval/run_eval.py --check --out eval/results/tmp
       - run: uv run pip-audit
       - run: uv run bandit -c pyproject.toml -r src
 

@@ -10,6 +10,7 @@ dependencies = [
     "pydantic>=2.7",
     "pydantic-settings>=2.3",
     "python-docx>=1.2.0",
+    "textstat>=0.7.13",
 ]
 
 [dependency-groups]
@@ -53,12 +54,12 @@ packages = ["accesslens"]
 plugins = ["pydantic.mypy"]
 
 [[tool.mypy.overrides]]
-module = ["lxml", "lxml.*"]
+module = ["lxml", "lxml.*", "textstat"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-pythonpath = ["eval"]
+pythonpath = ["eval", "tests"]
 addopts = "-ra --strict-markers"
 
 [tool.coverage.run]
