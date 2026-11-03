@@ -3,7 +3,7 @@
 **Status:** Living document — tick boxes as you go. **Start:** 2026-11-03
 Estimated ~5 weeks at a few hours a day. Each phase ends with a **Definition of Done (DoD)**; don't start the next phase until the DoD is met.
 
-Current phase: **Phase 3** (Phases 0-2 complete except the open items: branch protection and API keys in Phase 0, real-world documents in Phase 1)
+Current phase: **Phase 6** (Phases 0-5 complete except the open items: branch protection and API keys in Phase 0, real-world documents in Phase 1, and the real-model injection and agreement evals in Phase 4)
 
 ---
 
@@ -58,10 +58,10 @@ Current phase: **Phase 3** (Phases 0-2 complete except the open items: branch pr
 **DoD:** LLM agreement ≥ 80%; injection 0; an LLM outage still returns a rules-only report with a warning.
 
 ## Phase 5 — LangGraph pipeline & service (Days 21–23)
-- [ ] `agent/state.py`, `nodes.py`, `graph.py` with rules-only conditional edge
-- [ ] `service.py` — `AuditService.audit()` single entry point
-- [ ] Integration tests over the corpus
-- [ ] Structured logging (no content) + per-node timings
+- [x] `agent/state.py`, `nodes.py`, `graph.py` with rules-only conditional edge
+- [x] `service.py` — `AuditService.audit()` single entry point
+- [x] Integration tests over the corpus
+- [x] Structured logging (no content) + per-node timings
 
 **DoD:** `AuditService` produces full reports for the whole corpus in both modes.
 

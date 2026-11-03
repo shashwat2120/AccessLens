@@ -154,7 +154,10 @@ class LlmChecker:
     def run(self, doc: ParsedDocument, items: list[LlmItem]) -> LlmOutcome:
         """Review ``items``; never raises, always returns what could be established."""
         outcome = LlmOutcome()
-        if not self._settings.llm_enabled or not items:
+        if not self._settings.llm_enabled:
+            return outcome
+        if not items:  # nothing needed review: still say which model and prompts were in play
+            outcome.usage = self._usage(None, 0, 0, 0, degraded=False)
             return outcome
         try:
             return self._run(doc, items)
