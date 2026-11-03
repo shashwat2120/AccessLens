@@ -40,6 +40,7 @@ class Settings(BaseSettings):
 
     max_upload_mb: int = Field(default=10, ge=1)
     max_batch_files: int = Field(default=20, ge=1)
+    request_timeout_s: float = Field(default=60.0, gt=0)
     max_zip_entries: int = Field(default=2000, ge=1)
     max_uncompressed_mb: int = Field(default=100, ge=1)
     max_compression_ratio: int = Field(default=100, ge=1)

@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<title>Accessibility report</title>
+<style>
+  :root { color-scheme: light; }
+  body { font-family: system-ui, sans-serif; line-height: 1.5; color: #1a1a1a; background: #ffffff;
+         max-width: 60rem; margin: 0 auto; padding: 1rem; }
+  h1, h2 { line-height: 1.25; }
+  table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+  caption { text-align: left; font-weight: 600; padding: 0.5rem 0; }
+  th, td { border: 1px solid #595959; padding: 0.5rem; text-align: left; vertical-align: top; }
+  th { background: #eeeeee; }
+  .score { font-size: 2.5rem; font-weight: 700; }
+  .snippet { font-family: ui-monospace, monospace; background: #f4f4f4; padding: 0 0.25rem;
+             overflow-wrap: anywhere; }
+  .notice { border: 2px solid #1a1a1a; padding: 0.75rem; margin: 1rem 0; }
+  a { color: #0b3d91; }
+  footer { margin-top: 2rem; font-size: 0.9rem; color: #404040; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Accessibility report</h1>
+  <p>Generated {{ report.generated_at.strftime("%Y-%m-%d %H:%M UTC") }} &middot;
+     Mode: {{ "Rules and AI review" if report.mode == "full" else "Rules only" }} &middot;
+     File fingerprint: <span class="snippet">{{ report.meta.sha256[:12] }}</span></p>
+</header>
+<main>
+  <section aria-labelledby="summary">
+    <h2 id="summary">Summary</h2>
+    <p class="score">Score: {{ report.score }} / 100</p>
+    <table>
+      <caption>Findings by severity</caption>
+      <thead><tr><th scope="col">Severity</th><th scope="col">Findings</th></tr></thead>
+      <tbody>
+      {% for severity, count in counts %}
+        <tr><th scope="row">{{ severity|capitalize }}</th><td>{{ count }}</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    <p>{{ report.meta.word_count }} words, {{ report.meta.paragraph_count }} paragraphs,
+       {{ report.meta.image_count }} images, {{ report.meta.table_count }} tables.</p>
+  </section>
+
+  {% if report.warnings %}
+  <section aria-labelledby="warnings">
+    <h2 id="warnings">Notes</h2>
+    <ul class="notice">
+      {% for warning in report.warnings %}<li>{{ warning }}</li>{% endfor %}
+    </ul>
+  </section>
+  {% endif %}
+
+  <section aria-labelledby="findings">
+    <h2 id="findings">Findings, most important first</h2>
+    {% if report.findings %}
+    <table>
+      <caption>{{ report.findings|length }} issue{{ "" if report.findings|length == 1 else "s" }} found</caption>
+      <thead>
+        <tr>
+          <th scope="col">Severity</th><th scope="col">Rule</th><th scope="col">Where</th>
+          <th scope="col">Problem</th><th scope="col">How to fix</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for f in report.findings %}
+        <tr>
+          <th scope="row">{{ f.severity.value|capitalize }}</th>
+          <td>{{ f.rule_id }}<br>{{ f.title }}<br>
+            WCAG {{ f.wcag_criterion or "best practice" }}
+            {% if f.source.value == "llm" %}<br>AI-reviewed, confidence {{ "%.0f"|format(f.confidence * 100) }}%{% endif %}
+          </td>
+          <td>Block {{ f.location.block_order }}<br><span class="snippet">{{ f.location.snippet }}</span></td>
+          <td>{{ f.message }}</td>
+          <td>{{ f.suggestion }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p>No issues were found by the checks that ran.</p>
+    {% endif %}
+  </section>
+</main>
+<footer>
+  <p>Score: {{ formula }}</p>
+  <p>These checks cover common problems; they are not a complete accessibility audit.</p>
+</footer>
+</body>
+</html>

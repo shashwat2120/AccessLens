@@ -40,7 +40,7 @@ All interfaces call one `AuditService.audit(file_bytes, options) -> Report`. No 
 | LLM access | LangChain chat model integrations (`langchain-google-genai`, `langchain-groq`) |
 | Structured output | Pydantic v2 |
 | API | FastAPI + Uvicorn |
-| Rate limiting | slowapi |
+| Rate limiting | `limits` (moving window, in memory) as FastAPI dependencies; see ADR-014 |
 | Reports | Jinja2 (HTML, autoescape on), openpyxl/pandas (XLSX) |
 | MCP | Official MCP Python SDK (`mcp`), stdio transport |
 | UI | Streamlit (calls the API, never the pipeline directly) |

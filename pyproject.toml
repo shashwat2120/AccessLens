@@ -6,17 +6,29 @@ readme = "README.md"
 license = { text = "MIT" }
 requires-python = ">=3.12,<3.13"
 dependencies = [
+    "fastapi>=0.162.0",
+    "httpx>=0.28.1",
+    "jinja2>=3.1.6",
     "langchain-core>=1.7.4",
     "langchain-google-genai>=4.4.2",
     "langchain-groq>=1.1.3",
     "langgraph>=1.2.19",
+    "limits>=5.8.0",
     "lxml>=6.1.3",
+    "mcp>=2.3.0",
+    "openpyxl>=3.1.5",
     "pydantic>=2.7",
     "pydantic-settings>=2.3",
     "python-docx>=1.2.0",
+    "python-multipart>=0.0.33",
+    "streamlit>=1.66.1",
     "structlog>=26.1.0",
     "textstat>=0.7.13",
+    "uvicorn>=0.54.0",
 ]
+
+[project.scripts]
+accesslens = "accesslens.cli:main"
 
 [dependency-groups]
 dev = [
@@ -59,12 +71,12 @@ packages = ["accesslens"]
 plugins = ["pydantic.mypy"]
 
 [[tool.mypy.overrides]]
-module = ["lxml", "lxml.*", "textstat"]
+module = ["lxml", "lxml.*", "textstat", "openpyxl", "openpyxl.*"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-pythonpath = ["eval", "tests"]
+pythonpath = ["eval", "tests", "ui"]
 addopts = "-ra --strict-markers"
 
 [tool.coverage.run]
