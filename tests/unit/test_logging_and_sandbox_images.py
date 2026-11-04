@@ -34,6 +34,19 @@ def test_logs_are_one_json_object_per_line(capsys: pytest.CaptureFixture[str]) -
     assert lines[1]["event"] == "llm_run items=3 calls=1"
 
 
+@pytest.mark.usefixtures("restore_logging")
+def test_the_production_entry_point_turns_on_json_logging(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    from accesslens.api import main
+
+    monkeypatch.setattr(main, "create_app", lambda: object())
+    main.app_factory()
+    get_logger().info("probe", request_id="r1")
+    line = capsys.readouterr().err.strip().splitlines()[-1]
+    assert json.loads(line)["event"] == "probe"
+
+
 def test_sandboxed_image_extraction_matches_in_process(corpus: tuple[Path, Path]) -> None:
     data = (corpus[0] / "clean" / "clean-01.docx").read_bytes()
     assert extract_images_in_sandbox(data) == extract_image_blobs(data)

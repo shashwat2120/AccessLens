@@ -1,0 +1,7 @@
+# Streamlit settings for the UI. The API enforces the same limit (MAX_UPLOAD_MB, default 10),
+# so a file that is too big is stopped in the browser instead of after the upload.
+[server]
+maxUploadSize = 10
+
+[browser]
+gatherUsageStats = false

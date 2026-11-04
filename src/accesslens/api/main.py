@@ -14,6 +14,7 @@ from accesslens.api.limits import BodyLimitMiddleware, RateLimiter, body_limit_f
 from accesslens.api.problems import SECURITY_HEADERS, problem_response, register_handlers
 from accesslens.api.routes import build_routers, new_request_id
 from accesslens.config import Settings, get_settings
+from accesslens.logging import configure_logging
 from accesslens.service import AuditService
 
 
@@ -82,5 +83,10 @@ def create_app(service: AuditService | None = None, settings: Settings | None = 
 
 
 def app_factory() -> FastAPI:
-    """Entry point for ``uvicorn --factory accesslens.api.main:app_factory``."""
+    """Entry point for ``uvicorn --factory accesslens.api.main:app_factory``.
+
+    Switches on JSON logging (one object per line, never document content) before building the
+    app; ``create_app`` itself leaves logging alone so tests and embedding stay in control.
+    """
+    configure_logging()
     return create_app()
