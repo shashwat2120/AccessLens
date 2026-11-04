@@ -73,7 +73,10 @@ jobs:
           curl -fsS http://127.0.0.1:7860/_stcore/health
           docker exec space python -c "import urllib.request; print(urllib.request.urlopen('http://127.0.0.1:8000/readyz').status)"
           test "$(docker exec space id -u)" = "1000"
-          if curl -fsS --max-time 3 http://127.0.0.1:8000/healthz; then echo "API must not be public"; exit 1; fi
+          # Only the UI port may be published; the API stays inside the container. (Checking host
+          # port 8000 would hit the earlier API test container, so ask Docker what is published.)
+          test "$(docker port space | wc -l)" = "1"
+          docker port space | grep -q '^7860/tcp'
           docker logs space | tail -20
       # Runs the official Trivy container (version pinned) against a saved image, so it needs
       # no access to the Docker socket. The packaged GitHub Action failed to install Trivy on
