@@ -61,13 +61,15 @@ def test_client_never_sends_the_users_file_name(api: TestClient) -> None:
     assert sent["file"][0] == "document.docx"
 
 
-def test_streamlit_page_shows_the_privacy_notice_and_defaults_to_rules_only() -> None:
+def test_streamlit_page_shows_the_privacy_notice_and_keeps_ai_off_by_default() -> None:
     app = AppTest.from_file(str(ROOT / "ui" / "streamlit_app.py"), default_timeout=30).run()
     assert not app.exception
-    assert app.title[0].value == "AccessLens"
-    notice = " ".join(i.value for i in app.info)
-    assert "not stored" in notice
-    assert "Rules only" in notice
-    assert "confidential" in notice
-    assert app.toggle[0].value is True  # nothing is sent to an AI service unless chosen
-    assert not app.button  # no check button until a file is uploaded
+    page = " ".join(m.value for m in app.markdown)
+    assert "Find and fix accessibility problems" in page
+    assert "never stored" in page
+    assert "Rules only" in page
+    assert "confidential" in page
+    assert app.toggle[0].value is False  # nothing is sent to an AI service unless chosen
+    labels = {b.label: b for b in app.button}
+    assert labels["Check accessibility"].disabled  # nothing to check until a file is uploaded
+    assert not labels["Try a sample document"].disabled

@@ -66,6 +66,7 @@ select = ["E", "F", "I", "B", "UP", "S", "SIM", "RUF"]
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = ["S101"]
 "eval/**" = ["S311"]
+"ui/theme.py" = ["E501"]  # the stylesheet is one long CSS string
 
 [tool.mypy]
 strict = true
