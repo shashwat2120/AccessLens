@@ -1,0 +1,183 @@
+{
+  "date": "2026-11-04",
+  "commit": "f5d425f181d7ac80a9cd48a3a15c18eb98962fad",
+  "targets": {
+    "recall": 0.98,
+    "precision": 0.95,
+    "false_positives_per_clean_doc": 0.5
+  },
+  "documents": 40,
+  "true_positives": 79,
+  "false_negatives": 0,
+  "false_positives": 0,
+  "metrics": {
+    "recall": 1.0,
+    "precision": 1.0,
+    "false_positives_per_clean_doc": 0.0
+  },
+  "per_rule": {
+    "CLR-001": {
+      "tp": 4,
+      "fn": 0,
+      "fp": 0,
+      "recall": 1.0,
+      "precision": 1.0
+    },
+    "DOC-001": {
+      "tp": 4,
+      "fn": 0,
+      "fp": 0,
+      "recall": 1.0,
+      "precision": 1.0
+    },
+    "DOC-002": {
+      "tp": 3,
+      "fn": 0,
+      "fp": 0,
+      "recall": 1.0,
+      "precision": 1.0
+    },
+    "HDG-001": {
+      "tp": 3,
+      "fn": 0,
+      "fp": 0,
+      "recall": 1.0,
+      "precision": 1.0
+    },
+    "HDG-002": {
+      "tp": 4,
+      "fn": 0,
+      "fp": 0,
+      "recall": 1.0,
+      "precision": 1.0
+    },
+    "HDG-003": {
+      "tp": 3,
+      "fn": 0,
+      "fp": 0,
+      "recall": 1.0,
+      "precision": 1.0
+    },
+    "HDG-004": {
+      "tp": 4,
+      "fn": 0,
+      "fp": 0,
+      "recall": 1.0,
+      "precision": 1.0
+    },
+    "HDG-005": {
+      "tp": 6,
+      "fn": 0,
+      "fp": 0,
+      "recall": 1.0,
+      "precision": 1.0
+    },
+    "IMG-001": {
+      "tp": 4,
+      "fn": 0,
+      "fp": 0,
+      "recall": 1.0,
+      "precision": 1.0
+    },
+    "IMG-002": {
+      "tp": 3,
+      "fn": 0,
+      "fp": 0,
+      "recall": 1.0,
+      "precision": 1.0
+    },
+    "IMG-004": {
+      "tp": 3,
+      "fn": 0,
+      "fp": 0,
+      "recall": 1.0,
+      "precision": 1.0
+    },
+    "IMG-005": {
+      "tp": 3,
+      "fn": 0,
+      "fp": 0,
+      "recall": 1.0,
+      "precision": 1.0
+    },
+    "LNK-001": {
+      "tp": 4,
+      "fn": 0,
+      "fp": 0,
+      "recall": 1.0,
+      "precision": 1.0
+    },
+    "LNK-002": {
+      "tp": 3,
+      "fn": 0,
+      "fp": 0,
+      "recall": 1.0,
+      "precision": 1.0
+    },
+    "LST-001": {
+      "tp": 3,
+      "fn": 0,
+      "fp": 0,
+      "recall": 1.0,
+      "precision": 1.0
+    },
+    "TBL-001": {
+      "tp": 4,
+      "fn": 0,
+      "fp": 0,
+      "recall": 1.0,
+      "precision": 1.0
+    },
+    "TBL-002": {
+      "tp": 3,
+      "fn": 0,
+      "fp": 0,
+      "recall": 1.0,
+      "precision": 1.0
+    },
+    "TBL-003": {
+      "tp": 3,
+      "fn": 0,
+      "fp": 0,
+      "recall": 1.0,
+      "precision": 1.0
+    },
+    "TXT-001": {
+      "tp": 3,
+      "fn": 0,
+      "fp": 0,
+      "recall": 1.0,
+      "precision": 1.0
+    },
+    "TXT-002": {
+      "tp": 3,
+      "fn": 0,
+      "fp": 0,
+      "recall": 1.0,
+      "precision": 1.0
+    },
+    "TXT-003": {
+      "tp": 3,
+      "fn": 0,
+      "fp": 0,
+      "recall": 1.0,
+      "precision": 1.0
+    },
+    "TXT-004": {
+      "tp": 3,
+      "fn": 0,
+      "fp": 0,
+      "recall": 1.0,
+      "precision": 1.0
+    },
+    "TXT-005": {
+      "tp": 3,
+      "fn": 0,
+      "fp": 0,
+      "recall": 1.0,
+      "precision": 1.0
+    }
+  },
+  "misses": [],
+  "spurious": []
+}
