@@ -75,6 +75,14 @@ def hero_html() -> str:
     )
 
 
+def topbar_html() -> str:
+    """Slim header shown once results are on screen (the large hero is for first-time visitors)."""
+    return (
+        f'<header class="al-topbar"><div class="al-brand">{LOGO_SVG}<span>AccessLens</span></div>'
+        '<span class="al-topbar-tag">Word accessibility checker, mapped to WCAG 2.2</span></header>'
+    )
+
+
 def checks_card_html() -> str:
     items = "".join(
         f'<li><span class="al-dot" aria-hidden="true"></span><div><b>{e(name)}</b>'
