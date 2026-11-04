@@ -102,7 +102,7 @@ Documents are **untrusted data**. The LLM is used as a classifier, not an agent.
 ## 11. Security release checklist
 - [ ] All §3–§10 [MUST] items implemented with passing tests — implemented and tested except: HTTPS (provided by the hosting platform at deploy time) and the real-model injection eval below
 - [x] `tests/security/` suite green (also on Linux, including the sandbox memory limit and the MCP symlink guard)
-- [ ] Injection eval: 0 successes — `make eval-llm` is written; needs real API keys
+- [ ] Injection eval: 0 successes — 0 of 5 documents succeeded against the real models (2026-11-04), but only some payloads reached the model; strengthen the corpus so every payload is sent for review, then re-run, before ticking this
 - [ ] gitleaks, pip-audit, bandit, Trivy clean — gitleaks, pip-audit and bandit pass in CI; Trivy runs in CI on `main` and tags and has not run yet
 - [ ] Prod config: tracing off, docs off, CORS set, keys rotated from dev — tracing and docs are off by default in production; CORS and keys are set at deploy time
 - [x] `SECURITY.md` (repo root) explains how to report a vulnerability (enable GitHub private vulnerability reporting in the repo settings)

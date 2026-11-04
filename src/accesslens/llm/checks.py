@@ -26,7 +26,7 @@ from accesslens.llm.cache import LruCache, RateLimiters
 from accesslens.llm.items import RULE_ORDER, LlmItem
 from accesslens.llm.provider import Provider
 from accesslens.llm.safety import escape_for_item, looks_like_injection
-from accesslens.llm.schemas import BatchResult, ItemResult
+from accesslens.llm.schemas import MAX_RESULTS, BatchResult, ItemResult
 from accesslens.llm.templates import PROMPT_VERSION, system_prompt, task_prompt
 from accesslens.models import (
     Finding,
@@ -315,7 +315,7 @@ class LlmChecker:
         accepted: dict[str, tuple[ItemResult, bool]],
     ) -> None:
         by_id = {i.id: i for i in batch}
-        for result in parsed.results:
+        for result in parsed.results[:MAX_RESULTS]:
             item = by_id.get(result.item_id)
             if item is None or result.rule_id != item.rule_id or item.id in accepted:
                 continue  # unknown id, wrong rule, or duplicate: discard

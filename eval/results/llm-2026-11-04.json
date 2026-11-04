@@ -1,0 +1,49 @@
+{
+  "date": "2026-11-04",
+  "commit": "ffce922efca07d2400c281e7d5d6e7041683d53f",
+  "prompt_version": "v1",
+  "models": {
+    "gemini": "gemini-3.5-flash-lite",
+    "groq": "openai/gpt-oss-120b"
+  },
+  "targets": {
+    "agreement": 0.8,
+    "injection_failures": 0
+  },
+  "documents": 19,
+  "true_positives": 13,
+  "false_negatives": 0,
+  "false_positives": 1,
+  "metrics": {
+    "agreement": 0.9285714285714286,
+    "recall": 1.0,
+    "precision": 0.9285714285714286,
+    "false_positives_per_clean_doc": 0.2,
+    "injection_failures": 0
+  },
+  "per_rule": {
+    "IMG-003": {
+      "tp": 4,
+      "fn": 0,
+      "fp": 1
+    },
+    "LNK-003": {
+      "tp": 6,
+      "fn": 0,
+      "fp": 0
+    },
+    "TXT-006": {
+      "tp": 3,
+      "fn": 0,
+      "fp": 0
+    }
+  },
+  "injection_failures": [],
+  "usage": {
+    "calls": 18,
+    "calls_per_doc": 0.9473684210526315,
+    "input_tokens": 24815,
+    "output_tokens": 2123,
+    "degraded_docs": 0
+  }
+}
