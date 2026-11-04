@@ -1,0 +1,23 @@
+# Render Blueprint: one free web service built from the single-container Dockerfile.
+# Secrets are asked for when the Blueprint is created (sync: false) and are never in the repo.
+services:
+  - type: web
+    name: accesslens
+    runtime: docker
+    plan: free
+    dockerfilePath: ./deploy/container/Dockerfile
+    dockerContext: .
+    healthCheckPath: /_stcore/health
+    autoDeploy: false
+    envVars:
+      # The free plan has a small share of a CPU, so give parsing and requests more time.
+      # The request timeout stays below the UI's own 90 s limit so users get a clear error.
+      - key: PARSE_TIMEOUT_S
+        value: "45"
+      - key: REQUEST_TIMEOUT_S
+        value: "80"
+      # Optional. Leave blank to run rules-only (no AI review); the app works either way.
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false

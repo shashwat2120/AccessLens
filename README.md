@@ -93,7 +93,7 @@ Documents are never stored, and logs never contain document text. In AI mode, sh
 | [Roadmap](docs/06-ROADMAP.md) | Phases and checklist |
 | [Engineering standards](docs/07-ENGINEERING-STANDARDS.md) | Code, tests, CI |
 | [Decisions](docs/08-DECISIONS.md) | Why each choice was made |
-| [Deployment](docs/09-DEPLOYMENT.md) | Running it, and publishing a free demo on a Hugging Face Space |
+| [Deployment](docs/09-DEPLOYMENT.md) | Running it, and publishing a free demo on Render |
 | [Security policy](SECURITY.md) | How to report a vulnerability |
 | [Changelog](CHANGELOG.md) | What changed |
 

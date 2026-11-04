@@ -1,2 +1,2 @@
 *.sh text eol=lf
-deploy/huggingface/Dockerfile text eol=lf
+deploy/container/Dockerfile text eol=lf
