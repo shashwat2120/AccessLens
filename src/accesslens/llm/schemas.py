@@ -9,6 +9,9 @@ from pydantic import BaseModel, Field
 LlmRuleId = Literal["IMG-003", "LNK-003", "TXT-006", "TXT-001", "TXT-002"]
 
 
+MAX_RESULTS = 50  # a batch never holds more items than this; extra answers are ignored
+
+
 class ItemResult(BaseModel):
     item_id: str = Field(max_length=40)
     rule_id: LlmRuleId
@@ -19,4 +22,6 @@ class ItemResult(BaseModel):
 
 
 class BatchResult(BaseModel):
-    results: list[ItemResult] = Field(max_length=50)
+    # No maxItems here: Gemini's structured-output mode rejects that keyword with a vague
+    # "invalid argument". The cap is enforced in code instead (MAX_RESULTS, see checks.py).
+    results: list[ItemResult]

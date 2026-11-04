@@ -30,8 +30,10 @@ Short records of important choices: context, decision, consequences. Add new ent
 
 | Provider | Model | RPM | RPD | TPM | Checked on |
 |---|---|---|---|---|---|
-| Gemini | _fill in_ | | | | |
-| Groq | _fill in_ | | | | |
+| Gemini | `gemini-3.5-flash-lite` (vision, structured output verified with a real call) | not recorded | not recorded | not recorded | 2026-11-04 |
+| Groq | `openai/gpt-oss-120b` (text only, structured output verified with a real call) | not recorded | not recorded | not recorded | 2026-11-04 |
+
+Free-tier limits were not recorded: read them in AI Studio (https://aistudio.google.com/rate-limit) and the Groq console, then fill the table in. The default `LLM_REQUESTS_PER_MINUTE=10` is a conservative guess, not a measured limit. Lessons from the first real calls are in ADR-016.
 
 ## ADR-004 — Rules first, LLM only for judgment calls
 **Date:** 2026-11-03 · **Status:** Accepted
@@ -110,3 +112,14 @@ Short records of important choices: context, decision, consequences. Add new ent
 - **Sandbox memory limit:** the Linux test showed the limit does bind (a 32 MB cap kills the child; the parser alone needs about 60 MB of address space, so 512 MB leaves wide headroom). `PARSE_MEMORY_MB` may now be as low as 16 so the limit can be tested.
 - **Cheaper child:** profiling showed 0.55 s of a 0.63 s sandbox start-up was importing pydantic-settings. The child now receives its validation limits as JSON and never imports the settings machinery, while still validating independently of its caller.
 **Consequences:** Load testing 10 concurrent rules-only audits against the hardened container gave 60 of 60 successes with no errors, but p95 of 3.56 s before the child was slimmed, against a 3 s target. A clean re-measurement after the change was not possible while a background installer saturated the host CPU, so the target is not yet confirmed (see the roadmap). Each audit still pays for a fresh interpreter start; a pre-forked, pre-imported worker pool would remove most of that cost if the target stays out of reach on a small host. Trivy is verified by CI only: a local run through an external scanner image was not permitted in this environment. The base-image digest must be updated deliberately (Dependabot proposes it).
+
+## ADR-016 — First real-model results and what the providers taught us
+**Date:** 2026-11-04 · **Status:** Accepted
+**Context:** The LLM layer was built and tested with a fake model (ADR-012). Real keys and models exposed things a fake could not.
+**Decision and findings:**
+- **Model availability:** the provider's model list shows names that exist, not names a new account may use. `gemini-2.5-flash-lite` and `gemini-2.5-flash` were listed but return 404 ("no longer available to new users"). Verify a model with a real call, including an image call for vision, before configuring it. Avoid `-latest` aliases: they change under you and make eval results hard to reproduce.
+- **Schema keywords:** Gemini's structured-output mode rejects `maxItems` with a vague "invalid argument" (Groq accepts it). The `results` list cap is therefore enforced in code (`MAX_RESULTS`, extra answers ignored), a test forbids `maxItems` and `minItems` in the schema, and string and number limits stay in the schema.
+- **Determinism:** Gemini 3.x ignores the temperature setting ("fixed sampling defaults"), so results can differ between runs. Treat single-run eval numbers as indicative and re-run before relying on them.
+- **Vision matters:** on a document with one wrong and one correct alt text, Gemini with the image flagged only the wrong one; Groq, working from text alone, flagged both. Text-only fallback is a real accuracy loss, which is why its confidence is lowered by 0.2.
+- **Results (19 synthetic documents, one run):** agreement 92.9% (13 matched, 0 missed, 1 false alarm) against an 80% target; 0 of 5 injection documents succeeded; 18 calls and about 27K tokens in total. The false alarm was Gemini judging a plain "Bar chart of four bars that rise from 9 to 59" alt text as describing structure, not meaning.
+**Consequences:** The injection result is weak evidence: two injection documents sent nothing for review (hidden text and a table cell are not selected as items) and one hid its payload in an image title, which is not sent, so only some payloads reached the model. Before the injection checklist item is ticked, add injection documents whose payloads are guaranteed to be sent (inside link text, alt text and jargon paragraphs) and re-run. Free-tier limits are still unrecorded.

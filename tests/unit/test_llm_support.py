@@ -1,4 +1,5 @@
 import hashlib
+import json
 import os
 import re
 from pathlib import Path
@@ -14,7 +15,7 @@ from accesslens.llm.checks import LLM_RULES
 from accesslens.llm.provider import build_providers, get_chat_model
 from accesslens.llm.redact import redact
 from accesslens.llm.safety import escape_for_item, looks_like_injection
-from accesslens.llm.schemas import ItemResult
+from accesslens.llm.schemas import MAX_RESULTS, BatchResult, ItemResult
 from accesslens.llm.templates import PROMPT_VERSION, system_prompt, task_prompt
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -77,6 +78,28 @@ def test_schema_rejects_rules_the_llm_may_not_use() -> None:
         ItemResult(rule_id="IMG-003", **{**base, "confidence": 1.5})  # type: ignore[arg-type]
     with pytest.raises(ValidationError):
         ItemResult(rule_id="IMG-003", **{**base, "suggestion": "x" * 501})  # type: ignore[arg-type]
+
+
+def test_schema_avoids_keywords_gemini_rejects() -> None:
+    """Gemini's structured-output mode returns a vague 400 for list maxItems; found by a real call.
+
+    Length and range limits on strings and numbers are accepted; the batch size is capped in code.
+    """
+    schema = json.dumps(BatchResult.model_json_schema())
+    assert "maxItems" not in schema
+    assert "minItems" not in schema
+    many = {
+        "item_id": "x",
+        "rule_id": "IMG-003",
+        "issue": False,
+        "confidence": 0.5,
+        "message": "",
+        "suggestion": "",
+    }
+    assert (
+        len(BatchResult.model_validate({"results": [many] * (MAX_RESULTS + 10)}).results)
+        > MAX_RESULTS
+    )
 
 
 def test_prompts_exist_and_state_the_data_boundary() -> None:

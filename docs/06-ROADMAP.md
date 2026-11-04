@@ -52,8 +52,8 @@ Current phase: **Phase 7, in progress** (Phases 0-6 complete except the open ite
 - [x] Prompts v1 for IMG-003 (vision), TXT-001/002 rewrites, LNK-003, TXT-006
 - [x] Batching, structured output, schema validation, allowed-rule enforcement
 - [x] Retry/backoff, fallback, degraded mode, budget, cache
-- [ ] Injection eval passes (0 successes) — `make eval-llm` is written and tested with a fake model; needs real keys
-- [ ] LLM eval run; record agreement % — needs real keys and model names in `.env`
+- [ ] Injection eval passes (0 successes) — 0 of 5 injection documents succeeded against the real models, but only some payloads reach the model (two documents sent nothing for review, one hid the payload in an image title); needs a corpus whose payloads are guaranteed to reach the model before this is ticked
+- [x] LLM eval run; record agreement % — 92.9% on 19 synthetic documents (13 matched, 0 missed, 1 false alarm), see `eval/results/llm-2026-11-04.json`; small sample, single run
 
 **DoD:** LLM agreement ≥ 80%; injection 0; an LLM outage still returns a rules-only report with a warning.
 
