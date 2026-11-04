@@ -5,6 +5,7 @@ import pytest
 from components import (
     finding_html,
     group_findings,
+    hero_html,
     safe_url,
     score_card_html,
     score_ring_html,
@@ -13,8 +14,10 @@ from components import (
 from theme import CONTRAST_PAIRS, CSS, SEVERITIES, SEVERITY_STYLE, score_band
 
 from accesslens.ingest.parse_docx import parse_docx
+from accesslens.ingest.parse_pptx import parse_pptx
 from accesslens.report.score import compute_score
 from accesslens.rules import run_rules
+from accesslens.rules.catalog import rule_catalog
 from accesslens.rules.color import contrast_ratio
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -133,6 +136,23 @@ def test_every_severity_has_a_style_and_the_stylesheet_is_balanced() -> None:
     assert set(SEVERITIES) == set(SEVERITY_STYLE)
     css = CSS.replace("{{", "{").replace("}}", "}")  # the template doubles its braces
     assert css.count("{") == css.count("}")
+
+
+def test_slide_findings_say_which_slide() -> None:
+    on_slide = finding_html(finding(location={"block_order": 9, "snippet": "x", "slide": 4}))
+    assert "Slide 4" in on_slide and "Block 9" not in on_slide
+    assert "Block 3" in finding_html(finding())  # Word findings keep the block number
+
+
+def test_the_hero_claims_the_real_number_of_checks() -> None:
+    assert f"{len(rule_catalog())} checks" in hero_html()
+
+
+def test_the_bundled_sample_deck_shows_every_severity() -> None:
+    sample = ROOT / "ui" / "samples" / "sample-team-update.pptx"
+    findings, warnings = run_rules(parse_pptx(sample.read_bytes()))
+    assert not warnings
+    assert {f.severity.value for f in findings} == set(SEVERITIES)
 
 
 def test_the_bundled_sample_shows_every_severity() -> None:

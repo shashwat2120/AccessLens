@@ -16,6 +16,7 @@ from accesslens.mcp_server.server import (
     summarize,
 )
 from accesslens.models import DocMeta, Finding, Location, Report, Severity, Source, WcagLevel
+from accesslens.rules.catalog import rule_catalog
 from fakes import service_for
 
 
@@ -120,7 +121,7 @@ def test_rule_tools(inbox: Path) -> None:
         if getattr(listed, "structured_content", None)
         else [json.loads(c.text) for c in listed.content]
     )
-    assert len(entries) == 26
+    assert len(entries) == len(rule_catalog())
 
 
 def test_summary_is_capped_at_the_top_25_findings() -> None:

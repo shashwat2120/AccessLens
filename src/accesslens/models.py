@@ -36,6 +36,7 @@ class DocMeta(BaseModel):
     image_count: int
     table_count: int
     sha256: str  # of the uploaded file; never the filename
+    kind: Literal["docx", "pptx"] = "docx"
 
 
 class Run(BaseModel):
@@ -59,6 +60,18 @@ class Block(BaseModel):
     style_name: str | None = None
     heading_level: int | None = None  # 1-9 for real heading styles
     runs: list[Run] = Field(default_factory=list)
+    slide: int | None = None  # 1-based slide number; set for .pptx only
+
+
+class SlideInfo(BaseModel):
+    """Facts about one slide (.pptx). ``block_id`` is its title block, which always exists."""
+
+    number: int
+    block_id: str
+    title: str
+    has_title_placeholder: bool
+    title_is_first: bool  # the title is the first shape in reading order
+    empty_placeholders: int
 
 
 class ImageInfo(BaseModel):
@@ -98,6 +111,7 @@ class ParsedDocument(BaseModel):
     images: list[ImageInfo]
     tables: list[TableInfo]
     links: list[LinkInfo]
+    slides: list[SlideInfo] = Field(default_factory=list)
 
 
 class AuditOptions(BaseModel):
@@ -111,6 +125,7 @@ class Location(BaseModel):
     block_id: str
     block_order: int
     snippet: str = Field(max_length=120)
+    slide: int | None = None  # 1-based slide number for .pptx findings
 
 
 class Finding(BaseModel):

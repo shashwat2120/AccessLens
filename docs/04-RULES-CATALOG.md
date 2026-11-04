@@ -63,6 +63,18 @@ Severity guide: **Critical** = content unusable for some users · **High** = maj
 | TXT-005 | Body text smaller than 10 pt | Rule | Low | Best practice |
 | TXT-006 | Unexplained jargon or acronym on first use | **LLM** | Low | 3.1.3 Unusual Words (AAA), 3.1.4 Abbreviations (AAA) |
 
+## Slides (SLD, .pptx only)
+| ID | Check | How | Severity | WCAG |
+|---|---|---|---|---|
+| SLD-001 | Slide has no title | Rule: no title placeholder, or it is empty | High | 2.4.2 Page Titled (A) |
+| SLD-002 | Two slides share a title (reported on the later slide) | Rule | Low | 2.4.6 Headings and Labels (AA) |
+| SLD-003 | Title is not first in reading order (other text, tables or pictures come before it in the shape tree) | Rule | Medium | 1.3.2 Meaningful Sequence (A) |
+| SLD-004 | Slide text smaller than 12 pt (explicit sizes only) | Rule | Low | Best practice |
+| SLD-005 | Empty content placeholder | Rule | Low | 1.3.1 (A) |
+
+## Which rules apply to which format
+Rules with an `SLD-` id run on `.pptx` only. IMG-005, HDG-001 to HDG-005, LST-001, CLR-001, TXT-001 and TXT-005 run on `.docx` only: heading styles, floating images and typed lists do not exist on slides, CLR-001 needs the page background (which a themed slide does not state), and slides have their own size rule. Every other rule runs on both. The mapping is in `rules/base.py` (`kinds_for`). On slides, footer, date and slide-number placeholders are ignored, and the slide title is reported as a level-1 heading block.
+
 ## Adding a new rule
 1. Add a row here with a new ID (never reuse IDs).
 2. Implement in the matching `rules/*.py` file and register it in the registry.
@@ -71,6 +83,7 @@ Severity guide: **Critical** = content unusable for some users · **High** = maj
 5. Note the change in `CHANGELOG.md`.
 
 ## Known limitations (documented in README)
+- Slides: charts, SmartArt, embedded media, animations and visual contrast are not checked; text sizes inherited from a theme are not resolved; reading order is the shape-tree order, which is what a screen reader uses, but it is not compared with the visual order.
 - Contrast assumes a white page unless shading/highlight is set; theme colours are resolved where possible.
 - Text inside images (scanned text, charts) is not read except through IMG-003's vision check.
 - Colour used alone to convey meaning (WCAG 1.4.1) is not checked in v1.

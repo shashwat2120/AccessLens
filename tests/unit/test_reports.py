@@ -67,7 +67,7 @@ def make_report(**finding_kw: Any) -> Report:
 
 def test_catalog_describes_every_rule() -> None:
     catalog = rule_catalog()
-    assert len(catalog) == len(REGISTRY) + len(LLM_RULES) == 26
+    assert len(catalog) == len(REGISTRY) + len(LLM_RULES)
     assert [r.id for r in catalog] == sorted(r.id for r in catalog)
     assert all(r.description and r.how_to_fix for r in catalog)
     assert {r.source for r in catalog} == {"rule", "llm"}

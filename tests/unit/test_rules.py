@@ -2,7 +2,7 @@
 
 import pytest
 
-from accesslens.models import ParsedDocument, Run
+from accesslens.models import ParsedDocument, Run, SlideInfo
 from accesslens.rules import run_rules
 from factories import block, doc, heading, image, link, table
 
@@ -18,6 +18,30 @@ SIMPLE = (
     "five on weekdays. Each new member gets a short guide on the first day. Please keep the "
     "shared kitchen clean and tidy."
 )
+
+
+def deck(
+    *titles: str, first: bool = True, empty: int = 0, size: float | None = None
+) -> ParsedDocument:
+    """A deck with one slide per title; each slide is a title block (plus a body block if sized)."""
+    blocks, slides = [], []
+    for number, title in enumerate(titles, start=1):
+        order = len(blocks)
+        blocks.append(block(order, title, "heading", level=1, slide=number))
+        if size is not None:
+            body = Run(text="Some text", size_pt=size)
+            blocks.append(block(order + 1, "Some text", "paragraph", runs=[body], slide=number))
+        slides.append(
+            SlideInfo(
+                number=number,
+                block_id=f"b{order:04d}",
+                title=title,
+                has_title_placeholder=True,
+                title_is_first=first,
+                empty_placeholders=empty,
+            )
+        )
+    return doc(blocks, kind="pptx", slides=slides)
 
 
 def img_doc(**kw: object) -> ParsedDocument:
@@ -42,6 +66,19 @@ def bold(text: str, **kw: object) -> Run:
 
 # (rule id, label, document, expected block orders)
 CASES: list[tuple[str, str, ParsedDocument, list[int]]] = [
+    ("SLD-001", "fail-empty-title", deck("Intro", ""), [1]),
+    ("SLD-001", "fail-blank-title", deck("   "), [0]),
+    ("SLD-001", "pass-titled", deck("Intro", "Results"), []),
+    ("SLD-002", "fail-repeat", deck("Intro", "Results", "intro "), [2]),
+    ("SLD-002", "pass-distinct", deck("Intro", "Results"), []),
+    ("SLD-002", "pass-untitled-slides-are-sld001", deck("", ""), []),
+    ("SLD-003", "fail-title-after-content", deck("Intro", first=False), [0]),
+    ("SLD-003", "pass-title-first", deck("Intro"), []),
+    ("SLD-004", "fail-9pt", deck("Intro", size=9), [1]),
+    ("SLD-004", "pass-18pt", deck("Intro", size=18), []),
+    ("SLD-004", "pass-size-inherited", deck("Intro"), []),
+    ("SLD-005", "fail-two-empty", deck("Intro", empty=2), [0]),
+    ("SLD-005", "pass-none-empty", deck("Intro"), []),
     ("IMG-001", "fail-none", img_doc(alt_text=None), [1]),
     ("IMG-001", "fail-blank", img_doc(alt_text="   "), [1]),
     ("IMG-001", "pass-alt", img_doc(), []),

@@ -15,7 +15,7 @@ class AccessLensError(Exception):
 class InvalidFileError(AccessLensError):
     code = "invalid_file"
     status = 400
-    default_message = "The file is not a valid Word (.docx) document."
+    default_message = "The file is not a valid Word (.docx) or PowerPoint (.pptx) document."
 
 
 class FileTooLargeError(AccessLensError):

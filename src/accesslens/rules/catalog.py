@@ -122,6 +122,26 @@ _GUIDANCE: dict[str, tuple[str, str]] = {
         "Body text is smaller than 10 pt.",
         "Increase body text to at least 11 pt.",
     ),
+    "SLD-001": (
+        "A slide has no title, so screen reader users cannot tell slides apart.",
+        "Add a title to every slide; use the title placeholder from the slide layout.",
+    ),
+    "SLD-002": (
+        "Two slides have the same title.",
+        "Give each slide a title that says what is different about it.",
+    ),
+    "SLD-003": (
+        "A screen reader reads other content on the slide before its title.",
+        "In the Reading Order pane, move the title to the bottom of the list (it is read first).",
+    ),
+    "SLD-004": (
+        "Text on a slide is smaller than 12 pt.",
+        "Use at least 18 pt for body text on slides.",
+    ),
+    "SLD-005": (
+        "A slide has an empty placeholder that screen readers announce as blank.",
+        "Add content to the placeholder or delete it.",
+    ),
     "TXT-006": (
         "Jargon or an abbreviation is used without explanation (AI review).",
         "Spell out abbreviations on first use or add a short definition.",

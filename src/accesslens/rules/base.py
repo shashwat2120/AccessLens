@@ -39,6 +39,7 @@ class RuleConfig(BaseModel):
     fake_list_min_items: int = 2
     empty_table_ratio: float = 0.5
     min_body_pt: float = 10.0
+    min_slide_pt: float = 12.0
     default_text_pt: float = 11.0
     contrast_normal: float = 4.5
     contrast_large: float = 3.0
@@ -63,6 +64,32 @@ def snippet_of(block: Block) -> str:
     return (text or f"[{block.type}]")[:_MAX_SNIPPET]
 
 
+# Rules that only make sense for Word documents: they rely on heading styles, floating images,
+# typed lists or a white page, none of which a slide has. Rules with the SLD- prefix are
+# slide-only. Every other rule applies to both formats.
+_DOCX_ONLY = frozenset(
+    {
+        "IMG-005",
+        "HDG-001",
+        "HDG-002",
+        "HDG-003",
+        "HDG-004",
+        "HDG-005",
+        "LST-001",
+        "CLR-001",  # needs the page background, which a themed slide does not state
+        "TXT-001",
+        "TXT-005",  # slides have their own, larger, size rule (SLD-004)
+    }
+)
+ALL_KINDS = frozenset({"docx", "pptx"})
+
+
+def kinds_for(rule_id: str) -> frozenset[str]:
+    if rule_id.startswith("SLD-"):
+        return frozenset({"pptx"})
+    return frozenset({"docx"}) if rule_id in _DOCX_ONLY else ALL_KINDS
+
+
 @dataclass(frozen=True)
 class Rule:
     id: str
@@ -72,6 +99,10 @@ class Rule:
     wcag_level: WcagLevel
     confidence: float
     check: CheckFn
+
+    @property
+    def kinds(self) -> frozenset[str]:
+        return kinds_for(self.id)
 
     def run(self, doc: ParsedDocument, config: RuleConfig) -> list[Finding]:
         """Run the check and return findings; ids are unique per rule and block."""
@@ -93,6 +124,7 @@ class Rule:
                         block_id=hit.block.id,
                         block_order=hit.block.order,
                         snippet=snippet_of(hit.block),
+                        slide=hit.block.slide,
                     ),
                     message=hit.message,
                     suggestion=hit.suggestion,

@@ -1,4 +1,4 @@
-"""Child-process entry point: reads a .docx on stdin, writes JSON on stdout.
+"""Child-process entry point: reads a .docx or .pptx on stdin, writes JSON on stdout.
 
 argv: ``memory_mb mode limits_json [max_image_bytes]``. Modes: ``parse`` writes ParsedDocument
 JSON; ``images`` writes {image id: base64 bytes}, skipping images over the byte cap.
@@ -26,15 +26,18 @@ def main(argv: list[str]) -> int:
         mode = argv[2]
         import json
 
-        from accesslens.ingest.validate import ValidationLimits, validate_docx
+        from accesslens.ingest.validate import ValidationLimits, validate_upload
 
         data = sys.stdin.buffer.read()
         # Defence in depth: the sandbox does not trust its caller, so it validates again.
-        validate_docx(data, limits=ValidationLimits(**json.loads(argv[3])))
+        _, kind = validate_upload(data, limits=ValidationLimits(**json.loads(argv[3])))
         if mode == "images":
             import base64
 
-            from accesslens.ingest.parse_docx import extract_image_blobs
+            if kind == "pptx":
+                from accesslens.ingest.parse_pptx import extract_image_blobs
+            else:
+                from accesslens.ingest.parse_docx import extract_image_blobs
 
             cap = int(argv[4])
             blobs = {
@@ -44,9 +47,12 @@ def main(argv: list[str]) -> int:
             }
             sys.stdout.buffer.write(json.dumps(blobs).encode("utf-8"))
         else:
-            from accesslens.ingest.parse_docx import parse_docx
+            if kind == "pptx":
+                from accesslens.ingest.parse_pptx import parse_pptx as parse
+            else:
+                from accesslens.ingest.parse_docx import parse_docx as parse
 
-            sys.stdout.buffer.write(parse_docx(data).model_dump_json().encode("utf-8"))
+            sys.stdout.buffer.write(parse(data).model_dump_json().encode("utf-8"))
     except Exception:
         return 1
     return 0

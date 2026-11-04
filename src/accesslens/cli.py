@@ -25,7 +25,7 @@ _SUFFIX = {"json": ".json", "html": ".html", "xlsx": ".xlsx"}
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="accesslens", description=__doc__.splitlines()[0])
     commands = parser.add_subparsers(dest="command", required=True)
-    audit = commands.add_parser("audit", help="audit a .docx file or a folder of them")
+    audit = commands.add_parser("audit", help="audit a .docx or .pptx file or a folder of them")
     audit.add_argument("path", type=Path)
     audit.add_argument("--rules-only", action="store_true", help="send nothing to any AI service")
     audit.add_argument("--format", choices=sorted(_SUFFIX), default="json")
@@ -37,7 +37,8 @@ def _parser() -> argparse.ArgumentParser:
 
 def _collect(path: Path) -> list[Path]:
     if path.is_dir():
-        return sorted(p for p in path.rglob("*.docx") if p.is_file() and not p.is_symlink())
+        found = [*path.rglob("*.docx"), *path.rglob("*.pptx")]
+        return sorted(p for p in found if p.is_file() and not p.is_symlink())
     return [path]
 
 
@@ -60,7 +61,7 @@ def main(argv: list[str] | None = None) -> int:
 
     files = _collect(args.path)
     if not args.path.exists() or not files:
-        sys.stderr.write(f"error: no .docx files found at {args.path}\n")
+        sys.stderr.write(f"error: no .docx or .pptx files found at {args.path}\n")
         return EXIT_ERROR
     if (len(files) > 1 or args.path.is_dir() or args.format == "xlsx") and args.out is None:
         sys.stderr.write("error: --out is required for folders and for xlsx output\n")

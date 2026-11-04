@@ -9,7 +9,7 @@ import io
 import re
 import zipfile
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
 from zipfile import ZipInfo
 
 from lxml import etree
@@ -24,12 +24,23 @@ from accesslens.errors import (
 if TYPE_CHECKING:
     from accesslens.config import Settings
 
+DocKind = Literal["docx", "pptx"]
 MAIN_CONTENT_TYPE = (
     "application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"
 )
+PPTX_MAIN_CONTENT_TYPE = (
+    "application/vnd.openxmlformats-officedocument.presentationml.presentation.main+xml"
+)
+_KIND_BY_MAIN_TYPE: dict[str, DocKind] = {
+    MAIN_CONTENT_TYPE.lower(): "docx",
+    PPTX_MAIN_CONTENT_TYPE.lower(): "pptx",
+}
 _MACRO_CONTENT_TYPES = {
     "application/vnd.ms-word.document.macroenabled.main+xml",
     "application/vnd.ms-word.template.macroenabledtemplate.main+xml",
+    "application/vnd.ms-powerpoint.presentation.macroenabled.main+xml",
+    "application/vnd.ms-powerpoint.slideshow.macroenabled.main+xml",
+    "application/vnd.ms-powerpoint.template.macroenabled.main+xml",
 }
 _ZIP_MAGIC = b"PK\x03\x04"
 _CONTENT_TYPES = "[Content_Types].xml"
@@ -81,6 +92,19 @@ def validate_docx(
     limits: ValidationLimits | None = None,
 ) -> str:
     """Raise a typed error unless ``data`` looks like a safe .docx; return its SHA-256."""
+    sha, kind = validate_upload(data, settings, limits=limits)
+    if kind != "docx":
+        raise InvalidFileError
+    return sha
+
+
+def validate_upload(
+    data: bytes,
+    settings: "Settings | None" = None,
+    *,
+    limits: ValidationLimits | None = None,
+) -> tuple[str, DocKind]:
+    """Raise a typed error unless ``data`` is a safe .docx or .pptx; return (SHA-256, kind)."""
     if limits is None:
         from accesslens.config import get_settings
 
@@ -110,8 +134,8 @@ def validate_docx(
 
     if content_types is None:
         raise InvalidFileError
-    _check_content_types(content_types)
-    return hashlib.sha256(data).hexdigest()
+    kind = _check_content_types(content_types)
+    return hashlib.sha256(data).hexdigest(), kind
 
 
 def _check_directory(infos: list[ZipInfo], cfg: ValidationLimits) -> None:
@@ -148,7 +172,7 @@ def _check_xml_part(data: bytes) -> None:
         raise InvalidFileError
 
 
-def _check_content_types(data: bytes) -> None:
+def _check_content_types(data: bytes) -> DocKind:
     try:
         root = etree.fromstring(data, parser=hardened_xml_parser())
     except etree.XMLSyntaxError as exc:
@@ -160,5 +184,7 @@ def _check_content_types(data: bytes) -> None:
     }
     if types & _MACRO_CONTENT_TYPES:
         raise MacroEnabledError
-    if MAIN_CONTENT_TYPE.lower() not in types:
+    kinds = {_KIND_BY_MAIN_TYPE[t] for t in types if t in _KIND_BY_MAIN_TYPE}
+    if len(kinds) != 1:  # none, or a file claiming to be both
         raise InvalidFileError
+    return kinds.pop()

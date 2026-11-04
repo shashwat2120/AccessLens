@@ -21,7 +21,9 @@ _LLM_DISABLED = "AI review is disabled on this server; showing rule-based result
 
 
 class AuditService:
-    """Audit one .docx and return a ``Report``; the API, CLI, MCP server and UI call only this.
+    """Audit one .docx or .pptx and return a ``Report``.
+
+    The API, CLI, MCP server and UI call only this.
 
     Documents are held in memory for the call and never stored. Logs carry ids, sizes,
     durations and counts, never document content.

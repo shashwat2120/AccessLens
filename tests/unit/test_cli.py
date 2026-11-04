@@ -95,7 +95,7 @@ def test_errors_exit_2_without_leaking_details(
     assert "Traceback" not in err
     code, _, err = run(["audit", str(tmp_path / "missing.docx")], capsys)
     assert code == EXIT_ERROR
-    assert "no .docx files found" in err
+    assert "no .docx or .pptx files found" in err
 
 
 def test_target_grade_is_validated(
