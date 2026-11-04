@@ -23,8 +23,8 @@ All notable changes are recorded here. The format follows
 - Multi-stage, non-root, read-only-filesystem Docker images (API and UI) with a digest-pinned
   base, a container smoke test and Trivy scanning in CI, Dependabot, a load-test script and the
   repository `SECURITY.md` (Phase 7).
-
 - PowerPoint (.pptx) support: validation, sandboxed parsing without a new dependency, five slide rules (title, duplicate title, reading order, small text, empty placeholder), slide numbers in findings, a sample deck in the UI and 27 decks in the eval corpus. Word-only rules no longer run on slides.
+- A one-container image and build script for a free public demo on a Hugging Face Space (`deploy/huggingface/`, `docs/09-DEPLOYMENT.md`), built, smoke-tested and scanned in CI.
 
 ### Changed
 - After a check the web UI becomes a wide two-pane workspace (form, score and filters on the left, findings on the right) instead of one narrow column.
