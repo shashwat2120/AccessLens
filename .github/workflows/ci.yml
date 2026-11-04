@@ -4,6 +4,7 @@ on:
   pull_request:
   push:
     branches: [main]
+    tags: ["v*"]
 
 permissions:
   contents: read
@@ -17,7 +18,7 @@ jobs:
           fetch-depth: 0
       - uses: astral-sh/setup-uv@v3
       - run: uv python install 3.12
-      - run: uv sync --frozen
+      - run: uv sync --frozen --all-extras
       - run: uv run ruff check .
       - run: uv run ruff format --check .
       - run: uv run mypy
@@ -36,3 +37,41 @@ jobs:
       - uses: gitleaks/gitleaks-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # Builds both images on every PR so a broken Dockerfile is caught before merge; scans them
+  # with Trivy on main and release tags (docs/07-ENGINEERING-STANDARDS.md).
+  image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build --target api -t accesslens-api:ci .
+      - run: docker build --target ui -t accesslens-ui:ci .
+      - name: Smoke test the hardened API image
+        run: |
+          docker run -d --name api --read-only --tmpfs /tmp:size=256m,mode=1777 \
+            --cap-drop ALL --security-opt no-new-privileges:true \
+            -e API_KEYS_SHA256=0000000000000000000000000000000000000000000000000000000000000000 \
+            -p 127.0.0.1:8000:8000 accesslens-api:ci
+          for i in $(seq 1 40); do
+            curl -fsS http://127.0.0.1:8000/healthz && break
+            sleep 1
+          done
+          curl -fsS http://127.0.0.1:8000/readyz
+          test "$(docker exec api id -u)" = "10001"
+          docker logs api
+      - name: Trivy scan (API image)
+        if: github.event_name == 'push'
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: accesslens-api:ci
+          severity: CRITICAL,HIGH
+          ignore-unfixed: true
+          exit-code: "1"
+      - name: Trivy scan (UI image)
+        if: github.event_name == 'push'
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: accesslens-ui:ci
+          severity: CRITICAL,HIGH
+          ignore-unfixed: true
+          exit-code: "1"

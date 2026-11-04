@@ -1,0 +1,36 @@
+# Changelog
+
+All notable changes are recorded here. The format follows
+[Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses
+[Semantic Versioning](https://semver.org/).
+
+## [Unreleased]
+
+### Added
+- Rule engine with 23 deterministic checks mapped to WCAG 2.2, finding prioritisation and a
+  0-100 score (Phase 3).
+- LLM review of alt text, link text and jargon, plus plain-language rewrites, with PII redaction,
+  schema-validated output restricted to allowed rules, retries, provider fallback, a per-document
+  call budget and a rules-only degraded mode (Phase 4).
+- LangGraph audit pipeline behind a single `AuditService`, with JSON logs that never contain
+  document content (Phase 5).
+- CLI, REST API (API keys, rate limits, size limits, problem+json errors, security headers,
+  CORS), HTML and XLSX reports, MCP server and Streamlit UI (Phase 6).
+- Secure ingest: upload validation, a subprocess sandbox with time and memory limits, and a
+  `python-docx` parser (Phase 2).
+- Evaluation corpus generator, answer key, rules-only eval gate and LLM eval script (Phases 1,
+  3 and 4).
+- Multi-stage, non-root, read-only-filesystem Docker images (API and UI) with a digest-pinned
+  base, a container smoke test and Trivy scanning in CI, Dependabot, a load-test script and the
+  repository `SECURITY.md` (Phase 7).
+
+### Changed
+- Rate limiting uses the `limits` library as pre-authentication dependencies instead of
+  slowapi, so failed logins are throttled too.
+- The sandbox child no longer imports the settings machinery; it receives its validation limits
+  directly, which removes about half a second from every audit.
+
+### Security
+- Production never downloads data at runtime: the readability dictionary is baked into the
+  image, and `APP_ENV=prod` refuses to start without it.
+- The sandbox memory limit is covered by a test that runs on Linux.

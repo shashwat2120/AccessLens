@@ -12,7 +12,7 @@ Upload a .docx and AccessLens reports issues like missing or useless alt text, b
 - **Use it anywhere:** web app, REST API, CLI, or as an MCP tool from Claude and other AI assistants.
 
 ## Privacy
-Documents are never stored. In AI mode, short excerpts are sent to the configured LLM provider; free tiers may use prompts to improve the provider's products, so don't upload confidential documents to the public demo. **Rules-only mode** sends nothing to any AI service.
+Documents are never stored, and logs never contain document text. In AI mode, short text excerpts (with emails, phone numbers and long numbers masked; names are **not** detected) and images that have alt text are sent to the configured LLM provider. Images cannot be redacted. Free tiers may use prompts to improve the provider's products, so don't upload confidential documents to the public demo. **Rules-only mode** sends nothing to any AI service.
 
 ## Results
 _Coming after Phase 8 — accuracy, latency, and limitations from [`docs/05-EVALUATION.md`](docs/05-EVALUATION.md)._

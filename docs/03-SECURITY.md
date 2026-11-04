@@ -100,10 +100,10 @@ Documents are **untrusted data**. The LLM is used as a classifier, not an agent.
 - [SHOULD] Branch protection on `main`: PR + green CI required.
 
 ## 11. Security release checklist
-- [ ] All §3–§10 [MUST] items implemented with passing tests
-- [ ] `tests/security/` suite green
-- [ ] Injection eval: 0 successes
-- [ ] gitleaks, pip-audit, bandit, Trivy clean
-- [ ] Prod config: tracing off, docs off, CORS set, keys rotated from dev
-- [ ] `SECURITY.md` (repo root) explains how to report a vulnerability
-- [ ] README privacy section published
+- [ ] All §3–§10 [MUST] items implemented with passing tests — implemented and tested except: HTTPS (provided by the hosting platform at deploy time) and the real-model injection eval below
+- [x] `tests/security/` suite green (also on Linux, including the sandbox memory limit and the MCP symlink guard)
+- [ ] Injection eval: 0 successes — `make eval-llm` is written; needs real API keys
+- [ ] gitleaks, pip-audit, bandit, Trivy clean — gitleaks, pip-audit and bandit pass in CI; Trivy runs in CI on `main` and tags and has not run yet
+- [ ] Prod config: tracing off, docs off, CORS set, keys rotated from dev — tracing and docs are off by default in production; CORS and keys are set at deploy time
+- [x] `SECURITY.md` (repo root) explains how to report a vulnerability (enable GitHub private vulnerability reporting in the repo settings)
+- [x] README privacy section published

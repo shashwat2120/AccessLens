@@ -13,7 +13,7 @@ corpus:
 	uv run python eval/generate_corpus.py
 
 setup:
-	uv sync
+	uv sync --all-extras
 	uv run pre-commit install
 
 lint:

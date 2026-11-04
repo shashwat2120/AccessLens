@@ -8,17 +8,21 @@ import hashlib
 import io
 import re
 import zipfile
+from dataclasses import dataclass
+from typing import TYPE_CHECKING
 from zipfile import ZipInfo
 
 from lxml import etree
 
-from accesslens.config import Settings, get_settings
 from accesslens.errors import (
     AccessLensError,
     FileTooLargeError,
     InvalidFileError,
     MacroEnabledError,
 )
+
+if TYPE_CHECKING:
+    from accesslens.config import Settings
 
 MAIN_CONTENT_TYPE = (
     "application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"
@@ -47,10 +51,42 @@ def hardened_xml_parser() -> etree.XMLParser:
     )
 
 
-def validate_docx(data: bytes, settings: Settings | None = None) -> str:
+@dataclass(frozen=True)
+class ValidationLimits:
+    """The numbers validation needs, without the settings machinery.
+
+    The sandbox child receives these directly so it never imports pydantic-settings, which would
+    add about half a second to every audit.
+    """
+
+    max_upload_bytes: int
+    max_zip_entries: int
+    max_uncompressed_bytes: int
+    max_compression_ratio: int
+
+    @classmethod
+    def from_settings(cls, settings: "Settings") -> "ValidationLimits":
+        return cls(
+            max_upload_bytes=settings.max_upload_mb * 1024 * 1024,
+            max_zip_entries=settings.max_zip_entries,
+            max_uncompressed_bytes=settings.max_uncompressed_mb * 1024 * 1024,
+            max_compression_ratio=settings.max_compression_ratio,
+        )
+
+
+def validate_docx(
+    data: bytes,
+    settings: "Settings | None" = None,
+    *,
+    limits: ValidationLimits | None = None,
+) -> str:
     """Raise a typed error unless ``data`` looks like a safe .docx; return its SHA-256."""
-    cfg = settings or get_settings()
-    if len(data) > cfg.max_upload_mb * 1024 * 1024:
+    if limits is None:
+        from accesslens.config import get_settings
+
+        limits = ValidationLimits.from_settings(settings or get_settings())
+    cfg = limits
+    if len(data) > cfg.max_upload_bytes:
         raise FileTooLargeError
     if not data.startswith(_ZIP_MAGIC):
         raise InvalidFileError
@@ -78,7 +114,7 @@ def validate_docx(data: bytes, settings: Settings | None = None) -> str:
     return hashlib.sha256(data).hexdigest()
 
 
-def _check_directory(infos: list[ZipInfo], cfg: Settings) -> None:
+def _check_directory(infos: list[ZipInfo], cfg: ValidationLimits) -> None:
     if len(infos) > cfg.max_zip_entries:
         raise InvalidFileError
     seen: set[str] = set()
@@ -94,7 +130,7 @@ def _check_directory(infos: list[ZipInfo], cfg: Settings) -> None:
         if name.lower().endswith("vbaproject.bin"):
             raise MacroEnabledError
         total += info.file_size
-        if total > cfg.max_uncompressed_mb * 1024 * 1024:
+        if total > cfg.max_uncompressed_bytes:
             raise InvalidFileError
         ratio = info.file_size / max(info.compress_size, 1)
         if info.file_size >= _RATIO_FLOOR_BYTES and ratio > cfg.max_compression_ratio:

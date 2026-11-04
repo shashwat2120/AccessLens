@@ -3,7 +3,7 @@
 **Status:** Living document — tick boxes as you go. **Start:** 2026-11-03
 Estimated ~5 weeks at a few hours a day. Each phase ends with a **Definition of Done (DoD)**; don't start the next phase until the DoD is met.
 
-Current phase: **Phase 7** (Phases 0-6 complete except the open items: branch protection and API keys in Phase 0, real-world documents in Phase 1, and the real-model injection and agreement evals in Phase 4)
+Current phase: **Phase 7, in progress** (Phases 0-6 complete except the open items: branch protection and API keys in Phase 0, real-world documents in Phase 1, and the real-model injection and agreement evals in Phase 4)
 
 ---
 
@@ -75,12 +75,12 @@ Current phase: **Phase 7** (Phases 0-6 complete except the open items: branch pr
 **DoD:** all four interfaces audit the same file and return identical findings.
 
 ## Phase 7 — Production hardening & deploy (Days 29–33)
-- [ ] Dockerfile (multi-stage, non-root, pinned base, read-only FS)
-- [ ] Trivy scan in CI
-- [ ] Deploy API + UI (Hugging Face Spaces or Render), HTTPS, prod config
-- [ ] Complete SECURITY §11 checklist
-- [ ] Load test: 10 concurrent rules-only audits
-- [ ] Repo-root `SECURITY.md`, `CHANGELOG.md`
+- [x] Dockerfile (multi-stage, non-root, pinned base, read-only FS)
+- [x] Trivy scan in CI — configured for main and tags; first real result comes from the first CI run on `main`
+- [ ] Deploy API + UI (Hugging Face Spaces or Render), HTTPS, prod config — needs you to choose a host and sign in
+- [ ] Complete SECURITY §11 checklist — see the open items there
+- [ ] Load test: 10 concurrent rules-only audits — `eval/load_test.py` and a test exist; 60 of 60 succeeded, but p95 was 3.56 s vs the 3 s target and the post-optimisation re-run is still pending (ADR-015)
+- [x] Repo-root `SECURITY.md`, `CHANGELOG.md`
 
 **DoD:** public demo live; security checklist fully ticked.
 

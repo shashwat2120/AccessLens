@@ -1,5 +1,6 @@
 import io
 import socket
+import sys
 from pathlib import Path
 from typing import Any
 
@@ -32,6 +33,17 @@ def test_timeout_becomes_parse_failed(corpus: tuple[Path, Path]) -> None:
     data = (corpus[0] / "clean" / "clean-01.docx").read_bytes()
     with pytest.raises(ParseFailedError):
         parse_in_sandbox(data, Settings(_env_file=None, parse_timeout_s=0.01))
+
+
+@pytest.mark.skipif(sys.platform == "win32", reason="RLIMIT_AS exists on POSIX only")
+def test_memory_limit_is_enforced_in_the_child(corpus: tuple[Path, Path]) -> None:
+    data = (corpus[0] / "clean" / "clean-01.docx").read_bytes()
+    assert parse_in_sandbox(data, Settings(_env_file=None, parse_memory_mb=512))
+    # The parser alone needs roughly 60 MB of address space, so 32 MB is too little to even
+    # import it: the child dies and the failure surfaces as the same generic error as any
+    # other parse failure.
+    with pytest.raises(ParseFailedError):
+        parse_in_sandbox(data, Settings(_env_file=None, parse_memory_mb=32))
 
 
 def test_child_process_receives_no_secrets(monkeypatch: pytest.MonkeyPatch) -> None:
