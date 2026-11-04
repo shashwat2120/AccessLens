@@ -9,6 +9,7 @@ from accesslens.models import (
     LinkInfo,
     ParsedDocument,
     Run,
+    SlideInfo,
     TableInfo,
 )
 
@@ -75,6 +76,8 @@ def doc(
     title: str | None = "A document",
     language: str | None = "en-US",
     word_count: int | None = None,
+    kind: str = "docx",
+    slides: list[SlideInfo] | None = None,
 ) -> ParsedDocument:
     words = word_count if word_count is not None else sum(len(b.text.split()) for b in blocks)
     return ParsedDocument(
@@ -86,11 +89,13 @@ def doc(
             image_count=len(images or []),
             table_count=len(tables or []),
             sha256="0" * 64,
+            kind=kind,  # type: ignore[arg-type]
         ),
         blocks=blocks,
         images=images or [],
         tables=tables or [],
         links=links or [],
+        slides=slides or [],
     )
 
 

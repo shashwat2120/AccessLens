@@ -19,6 +19,7 @@ CATEGORIES = (
     ("Tables and lists", "Header rows, merged cells, hand-typed lists"),
     ("Colour contrast", "Text that is too faint to read comfortably"),
     ("Readability", "Reading level, very long sentences, jargon"),
+    ("Slides (.pptx)", "Missing or repeated titles, reading order, tiny text, blank placeholders"),
 )
 
 LOGO_SVG = (
@@ -65,11 +66,12 @@ def hero_html() -> str:
     return (
         '<section class="al-hero" aria-label="AccessLens"><div class="al-hero-copy">'
         f'<div class="al-brand">{LOGO_SVG}<span>AccessLens</span></div>'
-        "<h1>Find and fix accessibility problems in Word documents</h1>"
-        "<p>Upload a .docx and get a prioritized, plain-language fix list, mapped to WCAG 2.2. "
+        "<h1>Find and fix accessibility problems in Word and PowerPoint files</h1>"
+        "<p>Upload a .docx or .pptx and get a prioritized, plain-language fix list, mapped to "
+        "WCAG 2.2. "
         "Clear-cut checks are rule-based; AI helps only with judgement calls.</p>"
         '<div class="al-pills"><span class="al-pill">WCAG 2.2</span>'
-        '<span class="al-pill">26 checks</span><span class="al-pill">Rules plus optional AI</span>'
+        '<span class="al-pill">31 checks</span><span class="al-pill">Rules plus optional AI</span>'
         '<span class="al-pill">Nothing stored</span></div></div>'
         f"{example_preview_html()}</section>"
     )
@@ -79,7 +81,8 @@ def topbar_html() -> str:
     """Slim header shown once results are on screen (the large hero is for first-time visitors)."""
     return (
         f'<header class="al-topbar"><div class="al-brand">{LOGO_SVG}<span>AccessLens</span></div>'
-        '<span class="al-topbar-tag">Word accessibility checker, mapped to WCAG 2.2</span></header>'
+        '<span class="al-topbar-tag">Word and PowerPoint accessibility checker, '
+        "mapped to WCAG 2.2</span></header>"
     )
 
 
@@ -176,11 +179,16 @@ def finding_html(finding: dict[str, Any], rule: dict[str, Any] | None = None) ->
         f'<article class="al-finding" style="border-left-color:{accent}">'
         f'<header>{chip_html(severity)}<span class="al-rule">{e(finding["rule_id"])}</span>'
         f"<strong>{e(finding['title'])}</strong>{''.join(badges)}</header>"
-        f'<p class="al-where">Block {int(where["block_order"])}: '
+        f'<p class="al-where">{_place(where)}: '
         f"<code>{e(where['snippet'])}</code></p>"
         f'<p class="al-problem">{e(finding["message"])}</p>'
         f'<div class="al-fix"><strong>How to fix</strong>{e(finding["suggestion"])}</div></article>'
     )
+
+
+def _place(where: dict[str, Any]) -> str:
+    slide = where.get("slide")
+    return f"Slide {int(slide)}" if slide else f"Block {int(where['block_order'])}"
 
 
 def group_findings(findings: list[dict[str, Any]]) -> list[dict[str, Any]]:

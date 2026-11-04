@@ -72,4 +72,5 @@ def test_streamlit_page_shows_the_privacy_notice_and_keeps_ai_off_by_default() -
     assert app.toggle[0].value is False  # nothing is sent to an AI service unless chosen
     labels = {b.label: b for b in app.button}
     assert labels["Check accessibility"].disabled  # nothing to check until a file is uploaded
-    assert not labels["Try a sample document"].disabled
+    assert not labels["Try a sample report"].disabled
+    assert not labels["Try a sample deck"].disabled

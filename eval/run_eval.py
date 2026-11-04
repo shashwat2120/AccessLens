@@ -17,7 +17,8 @@ from pathlib import Path
 from typing import Any
 
 from accesslens.ingest.parse_docx import parse_docx
-from accesslens.ingest.validate import validate_docx
+from accesslens.ingest.parse_pptx import parse_pptx
+from accesslens.ingest.validate import validate_upload
 from accesslens.rules import REGISTRY, RuleConfig, run_rules
 
 ROOT = Path(__file__).resolve().parent
@@ -57,10 +58,11 @@ def evaluate(corpus: Path, key_path: Path) -> dict[str, Any]:
     config = RuleConfig()
     predicted: dict[Key, list[int]] = defaultdict(list)
     doc_ids: list[str] = []
-    for path in sorted(corpus.rglob("*.docx")):
+    for path in sorted([*corpus.rglob("*.docx"), *corpus.rglob("*.pptx")]):
         data = path.read_bytes()
-        validate_docx(data)
-        findings, warnings = run_rules(parse_docx(data), config)
+        _, kind = validate_upload(data)
+        parse = parse_pptx if kind == "pptx" else parse_docx
+        findings, warnings = run_rules(parse(data), config)
         if warnings:
             raise SystemExit(f"{path.stem}: {warnings}")
         doc_ids.append(path.stem)

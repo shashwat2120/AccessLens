@@ -106,15 +106,20 @@ def no_wait_limiters() -> RateLimiters:
 
 def service_for(settings: Any, responder: Responder | None = None) -> Any:
     """An AuditService with in-process parsing and a fake LLM (fast, no subprocess)."""
-    from accesslens.ingest.parse_docx import extract_image_blobs, parse_docx
+    from accesslens.ingest import parse_docx as docx_module
+    from accesslens.ingest import parse_pptx as pptx_module
+    from accesslens.ingest.validate import validate_upload
     from accesslens.llm.checks import LlmChecker
     from accesslens.service import AuditService
 
+    def parse(data: bytes, s: Any) -> Any:
+        module = pptx_module if validate_upload(data, s)[1] == "pptx" else docx_module
+        return (module.parse_pptx if module is pptx_module else module.parse_docx)(data)
+
+    def images(data: bytes, s: Any) -> dict[str, bytes]:
+        module = pptx_module if validate_upload(data, s)[1] == "pptx" else docx_module
+        return module.extract_image_blobs(data)
+
     fake, _ = provider(responder or echo(issue=False))
     checker = LlmChecker([fake], settings, limiters=no_wait_limiters(), sleep=lambda _: None)
-    return AuditService(
-        settings,
-        checker=checker,
-        parse=lambda data, s: parse_docx(data),
-        extract_images=lambda data, s: extract_image_blobs(data),
-    )
+    return AuditService(settings, checker=checker, parse=parse, extract_images=images)

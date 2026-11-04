@@ -64,6 +64,8 @@ def test_parser_agrees_with_answer_key_block_order(corpus: tuple[Path, Path]) ->
     checked = 0
     for row in rows:
         doc_id, rule = row["doc_id"], row["rule_id"]
+        if doc_id.split("-")[1].startswith("p"):
+            continue  # decks are parsed by test_pptx
         doc = load(corpus, folders[doc_id.split("-")[0]], doc_id)
         order = int(row["block_order"])
         block = doc.blocks[order]

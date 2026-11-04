@@ -61,6 +61,7 @@ def render_xlsx(report: Report) -> bytes:
         "How to fix",
         "Source",
         "Confidence",
+        "Slide",
     ]
     findings.append(headers)
     for finding in report.findings:
@@ -77,6 +78,7 @@ def render_xlsx(report: Report) -> bytes:
             finding.suggestion,
             finding.source.value,
             finding.confidence,
+            finding.location.slide,
         ]
         for column, value in enumerate(values, start=1):
             _write(findings.cell(findings.max_row, column), value)

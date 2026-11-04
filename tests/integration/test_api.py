@@ -10,6 +10,7 @@ from fastapi.testclient import TestClient
 from accesslens.api.auth import hash_key
 from accesslens.api.main import create_app
 from accesslens.config import Settings
+from accesslens.rules.catalog import rule_catalog
 from fakes import service_for
 
 KEY = "test-key-123"
@@ -209,7 +210,7 @@ def test_rules_endpoint_lists_every_check() -> None:
     response = client().get("/v1/rules", headers=HEADERS)
     assert response.status_code == 200
     rules = response.json()
-    assert len(rules) == 26
+    assert len(rules) == len(rule_catalog())
     assert {r["source"] for r in rules} == {"rule", "llm"}
     assert all(r["how_to_fix"] for r in rules)
 

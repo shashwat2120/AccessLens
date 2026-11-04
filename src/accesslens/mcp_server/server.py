@@ -21,10 +21,11 @@ from accesslens.rules.catalog import get_rule, rule_catalog
 from accesslens.service import AuditService
 
 TOP_FINDINGS = 25
+_SUFFIXES = {".docx", ".pptx"}
 
 
 def resolve_allowed_path(raw: str, allowed_dir: str) -> Path:
-    """Return the real path of ``raw`` if it is a .docx inside ``allowed_dir``, else raise.
+    """Return the real path of ``raw`` if it is a .docx or .pptx inside ``allowed_dir``, else raise.
 
     ``realpath`` resolves symlinks and ``..`` first, so a link pointing outside the allowed
     folder is rejected just like a plain traversal.
@@ -35,8 +36,8 @@ def resolve_allowed_path(raw: str, allowed_dir: str) -> Path:
     target = Path(os.path.realpath(root / raw))
     if root != target and root not in target.parents:
         raise InvalidRequestError("That path is outside the allowed folder.")
-    if target.suffix.lower() != ".docx" or not target.is_file():
-        raise InvalidRequestError("Only existing .docx files can be audited.")
+    if target.suffix.lower() not in _SUFFIXES or not target.is_file():
+        raise InvalidRequestError("Only existing .docx or .pptx files can be audited.")
     return target
 
 
@@ -52,6 +53,7 @@ def summarize(report: Report) -> dict[str, Any]:
                 "rule_id": f.rule_id,
                 "severity": f.severity.value,
                 "block": f.location.block_order,
+                "slide": f.location.slide,
                 "snippet": f.location.snippet[:120],
                 "problem": f.message,
                 "fix": f.suggestion,
@@ -72,7 +74,7 @@ def create_server(
 
     @server.tool()
     def audit_docx(path: str, rules_only: bool = False) -> dict[str, Any]:
-        """Audit a .docx file for accessibility issues; returns a summary and top 25 findings."""
+        """Audit a .docx or .pptx file for accessibility; returns a summary and top 25 findings."""
         try:
             target = resolve_allowed_path(path, cfg.mcp_allowed_dir)
             report = audit_service.audit(

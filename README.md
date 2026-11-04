@@ -1,11 +1,11 @@
 # AccessLens
 
-**Audit Word documents for accessibility issues and get a prioritized fix list, mapped to WCAG 2.2.**
+**Audit Word and PowerPoint documents for accessibility issues and get a prioritized fix list, mapped to WCAG 2.2.**
 
 > Status: feature-complete and tested; not yet deployed. The AI-review accuracy numbers are pending real API keys (see [Results](#results)).
 
 ## What it does
-Upload a .docx and AccessLens reports issues like missing or useless alt text, broken heading structure, unclear link text, tables without headers, low-contrast text, and hard-to-read passages, each with its location, why it matters, and how to fix it.
+Upload a .docx or .pptx and AccessLens reports issues like missing or useless alt text, broken heading structure, unclear link text, tables without headers, low-contrast text, and hard-to-read passages, each with its location, why it matters, and how to fix it.
 
 - **Rules first:** 23 clear-cut checks are deterministic and fast.
 - **AI for judgment calls:** an LLM reviews alt text against the actual image, flags unclear links and unexplained jargon, and suggests plain-language rewrites. It has no tools and can only *add* findings; it can never remove or change a rule finding.
@@ -74,7 +74,7 @@ Quality gates: 269 tests pass on Linux (96% coverage), plus ruff, strict mypy, b
 Documents are never stored, and logs never contain document text. In AI mode, short text excerpts (with emails, phone numbers and long numbers masked; names are **not** detected) and images that have alt text are sent to the configured LLM provider. Images cannot be redacted. Free tiers may use prompts to improve the provider's products, so don't upload confidential documents to the public demo. **Rules-only mode** sends nothing to any AI service.
 
 ## Limitations
-- English documents only; .docx only (no PDF or PowerPoint).
+- English documents only; .docx and .pptx only (no PDF or spreadsheets); on slides, charts, SmartArt, media and inherited text sizes are not checked.
 - Contrast, font size and bold checks read formatting set directly on text. Colours and sizes inherited from styles or themes are not resolved, and colour used alone to convey meaning (WCAG 1.4.1) is not checked.
 - Text inside images is read only through the AI alt-text review; scanned pages and charts are not analysed.
 - Images and links inside table cells are attributed to the table, not the cell.

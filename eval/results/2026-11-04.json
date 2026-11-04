@@ -1,13 +1,13 @@
 {
   "date": "2026-11-04",
-  "commit": "f5d425f181d7ac80a9cd48a3a15c18eb98962fad",
+  "commit": "f630f436f8078d4099b40115a4325b5110f36f82",
   "targets": {
     "recall": 0.98,
     "precision": 0.95,
     "false_positives_per_clean_doc": 0.5
   },
-  "documents": 40,
-  "true_positives": 79,
+  "documents": 67,
+  "true_positives": 112,
   "false_negatives": 0,
   "false_positives": 0,
   "metrics": {
@@ -24,14 +24,14 @@
       "precision": 1.0
     },
     "DOC-001": {
-      "tp": 4,
+      "tp": 7,
       "fn": 0,
       "fp": 0,
       "recall": 1.0,
       "precision": 1.0
     },
     "DOC-002": {
-      "tp": 3,
+      "tp": 6,
       "fn": 0,
       "fp": 0,
       "recall": 1.0,
@@ -73,14 +73,14 @@
       "precision": 1.0
     },
     "IMG-001": {
-      "tp": 4,
+      "tp": 7,
       "fn": 0,
       "fp": 0,
       "recall": 1.0,
       "precision": 1.0
     },
     "IMG-002": {
-      "tp": 3,
+      "tp": 6,
       "fn": 0,
       "fp": 0,
       "recall": 1.0,
@@ -101,7 +101,7 @@
       "precision": 1.0
     },
     "LNK-001": {
-      "tp": 4,
+      "tp": 7,
       "fn": 0,
       "fp": 0,
       "recall": 1.0,
@@ -121,8 +121,43 @@
       "recall": 1.0,
       "precision": 1.0
     },
+    "SLD-001": {
+      "tp": 3,
+      "fn": 0,
+      "fp": 0,
+      "recall": 1.0,
+      "precision": 1.0
+    },
+    "SLD-002": {
+      "tp": 3,
+      "fn": 0,
+      "fp": 0,
+      "recall": 1.0,
+      "precision": 1.0
+    },
+    "SLD-003": {
+      "tp": 3,
+      "fn": 0,
+      "fp": 0,
+      "recall": 1.0,
+      "precision": 1.0
+    },
+    "SLD-004": {
+      "tp": 3,
+      "fn": 0,
+      "fp": 0,
+      "recall": 1.0,
+      "precision": 1.0
+    },
+    "SLD-005": {
+      "tp": 3,
+      "fn": 0,
+      "fp": 0,
+      "recall": 1.0,
+      "precision": 1.0
+    },
     "TBL-001": {
-      "tp": 4,
+      "tp": 7,
       "fn": 0,
       "fp": 0,
       "recall": 1.0,

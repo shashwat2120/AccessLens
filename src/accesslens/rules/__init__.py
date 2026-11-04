@@ -10,6 +10,7 @@ from accesslens.rules import (  # noqa: F401 - imported for their @rule registra
     images,
     links,
     lists,
+    slides,
     tables,
     text,
 )
@@ -31,6 +32,8 @@ def run_rules(
     warnings: list[str] = []
     for rule_id, rule in sorted(REGISTRY.items()):
         if only is not None and rule_id not in only:
+            continue
+        if doc.meta.kind not in rule.kinds:
             continue
         try:
             findings.extend(rule.run(doc, cfg))

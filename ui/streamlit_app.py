@@ -31,7 +31,8 @@ from components import (  # noqa: E402
 )
 from theme import CSS, SEVERITIES, SEVERITY_STYLE  # noqa: E402
 
-SAMPLE = HERE / "samples" / "sample-quarterly-report.docx"
+SAMPLE_DOC = HERE / "samples" / "sample-quarterly-report.docx"
+SAMPLE_DECK = HERE / "samples" / "sample-team-update.pptx"
 SHOWN_PER_GROUP = 15
 XLSX = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 
@@ -173,7 +174,7 @@ def render_findings(result: dict[str, Any], visible: list[dict[str, Any]]) -> No
                 )
 
 
-def render_form(title: str) -> tuple[bool, bool, Any, bool]:
+def render_form(title: str) -> tuple[bool, str | None, Any, bool]:
     with st.container(border=True):
         st.markdown(f'<div class="al-card-title">{e(title)}</div>', unsafe_allow_html=True)
         ai_review = st.toggle(
@@ -183,18 +184,28 @@ def render_form(title: str) -> tuple[bool, bool, Any, bool]:
             help="Off by default. When on, short text excerpts and images with alt text "
             "are sent to Google Gemini (Groq as a fallback).",
         )
-        upload = st.file_uploader("Word document (.docx, up to 10 MB)", type=["docx"], key="upload")
-        check, sample = st.columns(2)
-        run = check.button(
+        upload = st.file_uploader(
+            "Word or PowerPoint file (.docx or .pptx, up to 10 MB)",
+            type=["docx", "pptx"],
+            key="upload",
+        )
+        run = st.button(
             "Check accessibility", type="primary", disabled=upload is None, width="stretch"
         )
-        try_sample = sample.button("Try a sample document", width="stretch")
-    return run, try_sample, upload, ai_review
+        report_col, deck_col = st.columns(2)
+        sample = None
+        if report_col.button("Try a sample report", width="stretch"):
+            sample = "doc"
+        if deck_col.button("Try a sample deck", width="stretch"):
+            sample = "deck"
+    return run, sample, upload, ai_review
 
 
 def main() -> None:
     st.set_page_config(
-        page_title="AccessLens: Word accessibility checker", page_icon="🔍", layout="wide"
+        page_title="AccessLens: Word and PowerPoint accessibility checker",
+        page_icon="🔍",
+        layout="wide",
     )
     st.markdown(CSS, unsafe_allow_html=True)
     result = st.session_state.get("result")
@@ -203,7 +214,7 @@ def main() -> None:
         st.markdown(hero_html(), unsafe_allow_html=True)
         form, about = st.columns([1.35, 1], gap="large")
         with form:
-            run, try_sample, upload, ai_review = render_form("Check a document")
+            run, sample, upload, ai_review = render_form("Check a document")
             st.markdown(privacy_html(), unsafe_allow_html=True)
         with about:
             st.markdown(checks_card_html(), unsafe_allow_html=True)
@@ -212,7 +223,7 @@ def main() -> None:
         st.markdown(topbar_html(), unsafe_allow_html=True)
         rail, main_col = st.columns([1, 2.3], gap="large")
         with rail:
-            run, try_sample, upload, ai_review = render_form("Check another document")
+            run, sample, upload, ai_review = render_form("Check another document")
             visible = render_summary(result)
         with main_col:
             render_findings(result, visible)
@@ -220,8 +231,11 @@ def main() -> None:
     if run and upload is not None:
         run_check(upload.getvalue(), upload.name, ai_review)
         st.rerun()
-    elif try_sample:
-        run_check(SAMPLE.read_bytes(), "the sample document", ai_review)
+    elif sample == "doc":
+        run_check(SAMPLE_DOC.read_bytes(), "the sample report", ai_review)
+        st.rerun()
+    elif sample == "deck":
+        run_check(SAMPLE_DECK.read_bytes(), "the sample deck", ai_review)
         st.rerun()
     st.markdown(footer_html(), unsafe_allow_html=True)
 

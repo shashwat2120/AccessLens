@@ -91,3 +91,36 @@ syn-29,TXT-006,8,true,unexplained acronyms (LLM)
 syn-30,HDG-001,0,true,"over 300 words, no heading styles"
 syn-30,HDG-005,0,true,no heading at all (co-occurs with HDG-001)
 syn-30,TXT-006,8,true,unexplained acronyms (LLM)
+syn-p01,SLD-001,3,true,slide with no title
+syn-p02,SLD-001,3,true,slide with no title
+syn-p03,SLD-001,3,true,slide with no title
+syn-p04,SLD-002,6,true,same title as an earlier slide
+syn-p05,SLD-002,6,true,same title as an earlier slide
+syn-p06,SLD-002,6,true,same title as an earlier slide
+syn-p07,SLD-003,3,true,title comes after the body in reading order
+syn-p08,SLD-003,3,true,title comes after the body in reading order
+syn-p09,SLD-003,3,true,title comes after the body in reading order
+syn-p10,SLD-004,4,true,9 pt text on a slide
+syn-p11,SLD-004,4,true,9 pt text on a slide
+syn-p12,SLD-004,4,true,9 pt text on a slide
+syn-p13,SLD-005,3,true,empty content placeholder
+syn-p14,SLD-005,3,true,empty content placeholder
+syn-p15,SLD-005,3,true,empty content placeholder
+syn-p16,IMG-001,4,true,picture without alt text
+syn-p16,IMG-002,5,true,placeholder alt text
+syn-p17,IMG-001,4,true,picture without alt text
+syn-p17,IMG-002,5,true,placeholder alt text
+syn-p18,IMG-001,4,true,picture without alt text
+syn-p18,IMG-002,5,true,placeholder alt text
+syn-p19,TBL-001,4,true,no header row
+syn-p19,LNK-001,5,true,vague link
+syn-p20,TBL-001,4,true,no header row
+syn-p20,LNK-001,5,true,vague link
+syn-p21,TBL-001,4,true,no header row
+syn-p21,LNK-001,5,true,vague link
+syn-p22,DOC-001,0,true,no document title
+syn-p22,DOC-002,0,true,no language set
+syn-p23,DOC-001,0,true,no document title
+syn-p23,DOC-002,0,true,no language set
+syn-p24,DOC-001,0,true,no document title
+syn-p24,DOC-002,0,true,no language set

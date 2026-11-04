@@ -11,7 +11,7 @@ from typing import Any
 
 from accesslens.agent.state import AuditState
 from accesslens.config import Settings
-from accesslens.ingest.validate import validate_docx
+from accesslens.ingest.validate import validate_upload
 from accesslens.llm.checks import LlmChecker
 from accesslens.llm.items import select_items
 from accesslens.models import ParsedDocument
@@ -44,7 +44,8 @@ def make_nodes(deps: Deps) -> dict[str, Node]:
     settings = deps.settings
 
     def validate(state: AuditState) -> dict[str, Any]:
-        return {"sha256": validate_docx(state["file_bytes"], settings)}
+        sha256, _ = validate_upload(state["file_bytes"], settings)
+        return {"sha256": sha256}
 
     def parse(state: AuditState) -> dict[str, Any]:
         return {"parsed": deps.parse(state["file_bytes"], settings)}

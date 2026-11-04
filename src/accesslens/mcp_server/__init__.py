@@ -1,1 +1,1 @@
-"""MCP server (stdio): lets AI assistants audit .docx files and explain rules."""
+"""MCP server (stdio): lets AI assistants audit .docx and .pptx files and explain rules."""

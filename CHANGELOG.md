@@ -24,7 +24,10 @@ All notable changes are recorded here. The format follows
   base, a container smoke test and Trivy scanning in CI, Dependabot, a load-test script and the
   repository `SECURITY.md` (Phase 7).
 
+- PowerPoint (.pptx) support: validation, sandboxed parsing without a new dependency, five slide rules (title, duplicate title, reading order, small text, empty placeholder), slide numbers in findings, a sample deck in the UI and 27 decks in the eval corpus. Word-only rules no longer run on slides.
+
 ### Changed
+- After a check the web UI becomes a wide two-pane workspace (form, score and filters on the left, findings on the right) instead of one narrow column.
 - The web UI is redesigned as a product: a hero with an example result, a clear upload panel with
   a "Try a sample document" button, a score ring with a word, colour-coded severity cards,
   filters, findings grouped by rule with linked WCAG references, and report downloads. Every

@@ -650,6 +650,12 @@ def generate(out_dir: Path, key_path: Path) -> list[Expected]:
         b.save(out_dir / folder / f"{b.doc_id}.docx")
         rows += b.expected
 
+    from generate_pptx import build_decks  # imported here: it is only needed when writing
+
+    for folder, deck in build_decks(bar_chart_png([3, 5, 8, 6])):
+        deck.save(out_dir / folder / f"{deck.doc_id}.pptx")
+        rows += [Expected(deck.doc_id, p.rule_id, p.block_order, p.notes) for p in deck.planted]
+
     key_path.parent.mkdir(parents=True, exist_ok=True)
     with key_path.open("w", newline="", encoding="utf-8") as fh:
         writer = csv.writer(fh, lineterminator="\n")
@@ -665,7 +671,7 @@ def main() -> None:
     parser.add_argument("--key", type=Path, default=ROOT / "answer_key.csv")
     args = parser.parse_args()
     rows = generate(args.out, args.key)
-    print(f"Wrote 40 documents to {args.out} and {len(rows)} expected issues to {args.key}")
+    print(f"Wrote the corpus to {args.out} and {len(rows)} expected issues to {args.key}")
 
 
 if __name__ == "__main__":
