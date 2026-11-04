@@ -25,6 +25,13 @@ All notable changes are recorded here. The format follows
   repository `SECURITY.md` (Phase 7).
 
 ### Changed
+- The web UI is redesigned as a product: a hero with an example result, a clear upload panel with
+  a "Try a sample document" button, a score ring with a word, colour-coded severity cards,
+  filters, findings grouped by rule with linked WCAG references, and report downloads. Every
+  colour pair is checked against WCAG AA with AccessLens's own contrast function, and all
+  document text is escaped before it reaches the page.
+- Identical findings in one block are folded into one that says how many there were.
+- The production API now writes JSON logs; the UI enforces the same 10 MB upload limit as the API.
 - Rate limiting uses the `limits` library as pre-authentication dependencies instead of
   slowapi, so failed logins are throttled too.
 - The sandbox child no longer imports the settings machinery; it receives its validation limits
