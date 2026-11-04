@@ -2,7 +2,9 @@
 
 **Audit Word and PowerPoint documents for accessibility issues and get a prioritized fix list, mapped to WCAG 2.2.**
 
-> Status: feature-complete and tested; not yet deployed. The AI-review accuracy numbers are pending real API keys (see [Results](#results)).
+> **Live demo:** https://accesslens-hdap.onrender.com (free hosting: after 15 minutes idle it sleeps, so the first visit can take about a minute to wake up; audits take a few seconds). Documents are not stored; do not upload confidential files (see [Privacy](#privacy)).
+>
+> Status: feature-complete and tested. Accuracy on real-world documents has not been measured (see [Results](#results)).
 
 ## What it does
 Upload a .docx or .pptx and AccessLens reports issues like missing or useless alt text, broken heading structure, unclear link text, tables without headers, low-contrast text, and hard-to-read passages, each with its location, why it matters, and how to fix it.

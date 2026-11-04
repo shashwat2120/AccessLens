@@ -21,6 +21,13 @@ You need a free Render account linked to your GitHub account. Check Render's cur
 
 Updates are manual (`autoDeploy: false`): after merging to `main`, press **Manual Deploy** in Render.
 
+## Verified deployment (2026-11-04)
+Deployed from `main` at commit `9aae1ec` as a Blueprint on the free plan (Docker runtime, no payment method requested). Checked by hand on the live site:
+- The sample deck returned score 52 ("Needs work") and 9 issues, identical to a local run, in about 5 seconds on the free CPU (about 1 second on a laptop).
+- Requesting an API path (`/v1/rules`) on the public address returns the UI's HTML, not API data, so the API is not reachable from outside.
+- After 15 minutes idle the service sleeps; the first request then shows Render's loading page for about a minute.
+Not measured: the load target (p95 under 3 s for 10 concurrent audits) on this hardware, and large documents against the 45 s parse timeout.
+
 ## Settings you may change (Render → Environment)
 | Variable | Effect |
 |---|---|
