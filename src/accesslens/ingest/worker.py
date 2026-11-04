@@ -1,10 +1,11 @@
 """Child-process entry point: reads a .docx on stdin, writes JSON on stdout.
 
-Modes (argv: memory_mb [mode [max_image_bytes]]): ``parse`` (default) writes ParsedDocument
+argv: ``memory_mb mode limits_json [max_image_bytes]``. Modes: ``parse`` writes ParsedDocument
 JSON; ``images`` writes {image id: base64 bytes}, skipping images over the byte cap.
 
-Run only through ``sandbox``. Failures exit non-zero with no output so no stack trace (and
-therefore no document content) can leak.
+The child imports as little as possible (no pydantic-settings, no asyncio): its start-up cost is
+paid on every audit. Run only through ``sandbox``. Failures exit non-zero with no output so no
+stack trace (and therefore no document content) can leak.
 """
 
 import sys
@@ -21,19 +22,21 @@ def _limit_memory(megabytes: int) -> None:
 
 def main(argv: list[str]) -> int:
     try:
-        _limit_memory(int(argv[1]) if len(argv) > 1 else 512)
-        mode = argv[2] if len(argv) > 2 else "parse"
-        from accesslens.ingest.validate import validate_docx
+        _limit_memory(int(argv[1]))
+        mode = argv[2]
+        import json
+
+        from accesslens.ingest.validate import ValidationLimits, validate_docx
 
         data = sys.stdin.buffer.read()
-        validate_docx(data)  # defence in depth: the sandbox does not trust its caller
+        # Defence in depth: the sandbox does not trust its caller, so it validates again.
+        validate_docx(data, limits=ValidationLimits(**json.loads(argv[3])))
         if mode == "images":
             import base64
-            import json
 
             from accesslens.ingest.parse_docx import extract_image_blobs
 
-            cap = int(argv[3])
+            cap = int(argv[4])
             blobs = {
                 key: base64.b64encode(blob).decode("ascii")
                 for key, blob in extract_image_blobs(data).items()

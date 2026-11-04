@@ -15,6 +15,7 @@ from accesslens.llm.checks import LlmChecker
 from accesslens.llm.provider import Provider, build_providers
 from accesslens.logging import get_logger
 from accesslens.models import AuditOptions, ParsedDocument, Report
+from accesslens.rules.text import warm_up
 
 _LLM_DISABLED = "AI review is disabled on this server; showing rule-based results only."
 
@@ -36,6 +37,9 @@ class AuditService:
         extract_images: Callable[[bytes, Settings], dict[str, bytes]] = extract_images_in_sandbox,
     ) -> None:
         self._settings = settings or get_settings()
+        # Pay the one-off dictionary load at startup, not on the first audit. In production a
+        # missing dictionary is an error here rather than a silent download later.
+        warm_up(allow_download=self._settings.app_env != "prod")
         chosen = providers if providers is not None else build_providers(self._settings)
         self._checker = checker or LlmChecker(chosen, self._settings)
         self._graph = build_graph(Deps(self._settings, self._checker, parse, extract_images))

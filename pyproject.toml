@@ -7,7 +7,6 @@ license = { text = "MIT" }
 requires-python = ">=3.12,<3.13"
 dependencies = [
     "fastapi>=0.162.0",
-    "httpx>=0.28.1",
     "jinja2>=3.1.6",
     "langchain-core>=1.7.4",
     "langchain-google-genai>=4.4.2",
@@ -21,7 +20,6 @@ dependencies = [
     "pydantic-settings>=2.3",
     "python-docx>=1.2.0",
     "python-multipart>=0.0.33",
-    "streamlit>=1.66.1",
     "structlog>=26.1.0",
     "textstat>=0.7.13",
     "uvicorn>=0.54.0",
@@ -29,6 +27,12 @@ dependencies = [
 
 [project.scripts]
 accesslens = "accesslens.cli:main"
+
+[project.optional-dependencies]
+ui = [
+    "httpx>=0.28.1",
+    "streamlit>=1.66.1",
+]
 
 [dependency-groups]
 dev = [
@@ -71,7 +75,7 @@ packages = ["accesslens"]
 plugins = ["pydantic.mypy"]
 
 [[tool.mypy.overrides]]
-module = ["lxml", "lxml.*", "textstat", "openpyxl", "openpyxl.*"]
+module = ["lxml", "lxml.*", "textstat", "openpyxl", "openpyxl.*", "nltk", "nltk.*"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]

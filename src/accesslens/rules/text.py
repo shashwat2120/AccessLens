@@ -1,6 +1,7 @@
 """Text and readability rules TXT-001 to TXT-005. TXT-006 needs judgement (LLM layer)."""
 
 import re
+from functools import lru_cache
 
 import textstat
 
@@ -10,6 +11,30 @@ from accesslens.rules.base import Hit, RuleConfig, rule, sections
 _SENTENCE_END = re.compile(r"(?<=[.!?])\s+(?=[A-Z0-9\"'(])")
 _EDGE_PUNCTUATION = ".,;:!?\"'()[]"
 _BODY = ("paragraph", "list_item")
+
+
+_DICTIONARY_MISSING = (
+    "The readability dictionary (NLTK cmudict) is not installed. Production never downloads it "
+    "at runtime; bake it into the image or run `python -m nltk.downloader cmudict`."
+)
+
+
+@lru_cache
+def warm_up(allow_download: bool = True) -> None:
+    """Load the readability dictionary now; the first score otherwise costs about 2 seconds.
+
+    ``textstat`` silently downloads the dictionary through NLTK when it is missing. With
+    ``allow_download=False`` (production) a missing dictionary is a startup error instead, so a
+    server never fetches data from the internet while handling documents.
+    """
+    if not allow_download:
+        import nltk
+
+        try:
+            nltk.data.find("corpora/cmudict")
+        except LookupError as exc:
+            raise RuntimeError(_DICTIONARY_MISSING) from exc
+    textstat.flesch_kincaid_grade("Load the word list before the first request arrives.")
 
 
 def _terminated(text: str) -> str:

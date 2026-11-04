@@ -13,11 +13,13 @@ import os
 # Fixed argv, no shell; document bytes go to the child over stdin only.
 import subprocess  # nosec B404
 import sys
+from dataclasses import asdict
 
 from pydantic import ValidationError
 
 from accesslens.config import Settings, get_settings
 from accesslens.errors import ParseFailedError
+from accesslens.ingest.validate import ValidationLimits
 from accesslens.models import ParsedDocument
 
 _KEEP_ENV = ("PATH", "SYSTEMROOT", "TEMP", "TMP")
@@ -28,13 +30,16 @@ def _child_env() -> dict[str, str]:
     return {key: os.environ[key] for key in _KEEP_ENV if key in os.environ}
 
 
-def _run_worker(data: bytes, cfg: Settings, *extra: str) -> bytes:
+def _run_worker(data: bytes, cfg: Settings, mode: str, *extra: str) -> bytes:
     command = [
         sys.executable,
         "-I",
         "-m",
         "accesslens.ingest.worker",
         str(cfg.parse_memory_mb),
+        mode,
+        # The child validates with these limits and never imports the settings machinery.
+        json.dumps(asdict(ValidationLimits.from_settings(cfg))),
         *extra,
     ]
     try:
