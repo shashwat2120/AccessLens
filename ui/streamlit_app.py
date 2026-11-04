@@ -19,6 +19,7 @@ sys.path.insert(0, str(HERE))
 from client import AccessLensClient, ApiError  # noqa: E402
 from components import (  # noqa: E402
     checks_card_html,
+    e,
     finding_html,
     footer_html,
     group_findings,
@@ -26,6 +27,7 @@ from components import (  # noqa: E402
     privacy_html,
     score_card_html,
     stat_card_html,
+    topbar_html,
 )
 from theme import CSS, SEVERITIES, SEVERITY_STYLE  # noqa: E402
 
@@ -73,28 +75,24 @@ def run_check(data: bytes, name: str, ai_review: bool) -> None:
     }
 
 
-def render_results(result: dict[str, Any]) -> None:
-    report, rules = result["report"], result["rules"]
+def render_summary(result: dict[str, Any]) -> list[dict[str, Any]]:
+    """The left rail: score, counts, filters and downloads. Returns the findings to show."""
+    report = result["report"]
     findings = report["findings"]
-    counts = report["counts"]
-
-    st.markdown(f"## Results for {result['name']}")
-    left, right = st.columns([1.6, 2.4], gap="medium")
-    with left:
-        st.markdown(
-            score_card_html(report["score"], len(findings), report["mode"]), unsafe_allow_html=True
+    st.markdown(f'<div class="al-doc-name">{e(result["name"])}</div>', unsafe_allow_html=True)
+    st.markdown(
+        score_card_html(report["score"], len(findings), report["mode"]), unsafe_allow_html=True
+    )
+    pairs = list(zip(SEVERITIES, st.columns(2, gap="small") * 2, strict=True))
+    for severity, column in pairs:
+        column.markdown(
+            stat_card_html(severity, report["counts"][severity]), unsafe_allow_html=True
         )
-    with right:
-        for column, severity in zip(st.columns(4, gap="small"), SEVERITIES, strict=True):
-            column.markdown(stat_card_html(severity, counts[severity]), unsafe_allow_html=True)
-
     for warning in report["warnings"]:
         st.info(warning)
     if not findings:
-        st.success("No issues were found by the checks that ran. Well done.")
-        return
+        return []
 
-    st.markdown("### Findings, most important first")
     chosen = st.pills(
         "Show severities",
         options=list(SEVERITIES),
@@ -107,7 +105,8 @@ def render_results(result: dict[str, Any]) -> None:
         .strip()
         .lower()
     )
-    visible = [
+    render_downloads(result)
+    return [
         f
         for f in findings
         if f["severity"] in (chosen or [])
@@ -117,6 +116,40 @@ def render_results(result: dict[str, Any]) -> None:
             in " ".join((f["rule_id"], f["title"], f["message"], f["location"]["snippet"])).lower()
         )
     ]
+
+
+def render_downloads(result: dict[str, Any]) -> None:
+    client, data, ai = _client(), result["data"], result["ai_review"]
+    st.markdown("**Download the report**")
+    st.download_button(
+        "HTML report",
+        data=lambda: client.audit(data, rules_only=not ai, fmt="html"),
+        file_name="accessibility-report.html",
+        mime="text/html",
+        width="stretch",
+    )
+    st.download_button(
+        "Spreadsheet (XLSX)",
+        data=lambda: client.audit(data, rules_only=not ai, fmt="xlsx"),
+        file_name="accessibility-report.xlsx",
+        mime=XLSX,
+        width="stretch",
+    )
+    st.download_button(
+        "Raw data (JSON)",
+        data=json.dumps(result["report"], indent=2),
+        file_name="accessibility-report.json",
+        mime="application/json",
+        width="stretch",
+    )
+
+
+def render_findings(result: dict[str, Any], visible: list[dict[str, Any]]) -> None:
+    rules = result["rules"]
+    st.markdown("## Findings, most important first")
+    if not result["report"]["findings"]:
+        st.success("No issues were found by the checks that ran. Well done.")
+        return
     if not visible:
         st.info("No findings match these filters.")
     for group in group_findings(visible):
@@ -139,30 +172,24 @@ def render_results(result: dict[str, Any]) -> None:
                     "The spreadsheet download lists them all."
                 )
 
-    st.markdown("### Download the report")
-    client, data, ai = _client(), result["data"], result["ai_review"]
-    html_col, xlsx_col, json_col = st.columns(3)
-    html_col.download_button(
-        "HTML report",
-        data=lambda: client.audit(data, rules_only=not ai, fmt="html"),
-        file_name="accessibility-report.html",
-        mime="text/html",
-        width="stretch",
-    )
-    xlsx_col.download_button(
-        "Spreadsheet (XLSX)",
-        data=lambda: client.audit(data, rules_only=not ai, fmt="xlsx"),
-        file_name="accessibility-report.xlsx",
-        mime=XLSX,
-        width="stretch",
-    )
-    json_col.download_button(
-        "Raw data (JSON)",
-        data=json.dumps(report, indent=2),
-        file_name="accessibility-report.json",
-        mime="application/json",
-        width="stretch",
-    )
+
+def render_form(title: str) -> tuple[bool, bool, Any, bool]:
+    with st.container(border=True):
+        st.markdown(f'<div class="al-card-title">{e(title)}</div>', unsafe_allow_html=True)
+        ai_review = st.toggle(
+            "Add AI review of alt text, links and jargon",
+            value=False,
+            key="ai_review",
+            help="Off by default. When on, short text excerpts and images with alt text "
+            "are sent to Google Gemini (Groq as a fallback).",
+        )
+        upload = st.file_uploader("Word document (.docx, up to 10 MB)", type=["docx"], key="upload")
+        check, sample = st.columns(2)
+        run = check.button(
+            "Check accessibility", type="primary", disabled=upload is None, width="stretch"
+        )
+        try_sample = sample.button("Try a sample document", width="stretch")
+    return run, try_sample, upload, ai_review
 
 
 def main() -> None:
@@ -170,36 +197,32 @@ def main() -> None:
         page_title="AccessLens: Word accessibility checker", page_icon="🔍", layout="wide"
     )
     st.markdown(CSS, unsafe_allow_html=True)
-    st.markdown(hero_html(), unsafe_allow_html=True)
+    result = st.session_state.get("result")
 
-    form, about = st.columns([1.35, 1], gap="large")
-    with form:
-        with st.container(border=True):
-            st.markdown('<div class="al-card-title">Check a document</div>', unsafe_allow_html=True)
-            ai_review = st.toggle(
-                "Add AI review of alt text, links and jargon",
-                value=False,
-                help="Off by default. When on, short text excerpts and images with alt text "
-                "are sent to Google Gemini (Groq as a fallback).",
-            )
-            upload = st.file_uploader("Word document (.docx, up to 10 MB)", type=["docx"])
-            check, sample = st.columns(2)
-            run = check.button(
-                "Check accessibility", type="primary", disabled=upload is None, width="stretch"
-            )
-            try_sample = sample.button("Try a sample document", width="stretch")
-        st.markdown(privacy_html(), unsafe_allow_html=True)
-    with about:
-        st.markdown(checks_card_html(), unsafe_allow_html=True)
+    if result is None:
+        st.markdown(hero_html(), unsafe_allow_html=True)
+        form, about = st.columns([1.35, 1], gap="large")
+        with form:
+            run, try_sample, upload, ai_review = render_form("Check a document")
+            st.markdown(privacy_html(), unsafe_allow_html=True)
+        with about:
+            st.markdown(checks_card_html(), unsafe_allow_html=True)
+    else:
+        # a workspace: summary and the next check on the left, the findings on the right
+        st.markdown(topbar_html(), unsafe_allow_html=True)
+        rail, main_col = st.columns([1, 2.3], gap="large")
+        with rail:
+            run, try_sample, upload, ai_review = render_form("Check another document")
+            visible = render_summary(result)
+        with main_col:
+            render_findings(result, visible)
 
     if run and upload is not None:
         run_check(upload.getvalue(), upload.name, ai_review)
+        st.rerun()
     elif try_sample:
         run_check(SAMPLE.read_bytes(), "the sample document", ai_review)
-
-    if "result" in st.session_state:
-        st.divider()
-        render_results(st.session_state["result"])
+        st.rerun()
     st.markdown(footer_html(), unsafe_allow_html=True)
 
 

@@ -61,7 +61,7 @@ CSS = f"""
            --canvas:{CANVAS}; --surface:{SURFACE}; --border:{BORDER}; }}
   html, body, [class*="css"], .stApp {{ font-family: Inter, "Segoe UI", system-ui, -apple-system,
     "Helvetica Neue", Arial, sans-serif; color: var(--ink); }}
-  .block-container {{ max-width: 1240px; padding-top: 1.25rem; padding-bottom: 3rem; }}
+  .block-container {{ max-width: 1560px; padding-left: 2.5rem; padding-right: 2.5rem; padding-top: 1.25rem; padding-bottom: 3rem; }}
   header[data-testid="stHeader"] {{ background: transparent; }}
   footer, #MainMenu {{ visibility: hidden; }}
   h1, h2, h3 {{ letter-spacing: -0.01em; color: var(--ink); }}
@@ -90,6 +90,16 @@ CSS = f"""
   .al-pills {{ display:flex; flex-wrap:wrap; gap:.5rem; }}
   .al-pill {{ background:rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.35);
     border-radius:999px; padding:.28rem .8rem; font-size:.86rem; font-weight:600; color:#fff; }}
+
+  /* workspace header and left rail */
+  .al-topbar {{ background: linear-gradient(135deg, {BRAND_DARK} 0%, {BRAND} 100%); color:#fff;
+    border-radius:14px; padding:.8rem 1.4rem; margin-bottom:1.3rem; display:flex;
+    align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap; }}
+  .al-topbar .al-brand {{ display:flex; align-items:center; gap:.7rem; font-weight:700;
+    font-size:1.1rem; }}
+  .al-topbar-tag {{ color:#fff; font-size:.92rem; }}
+  .al-doc-name {{ font-weight:700; font-size:1.05rem; color:var(--ink); margin:.9rem 0 .5rem;
+    word-break:break-word; }}
 
   /* generic card */
   .al-card {{ background: var(--surface); border:1px solid var(--border); border-radius:14px;
