@@ -36,7 +36,7 @@
 4. `pytest` with coverage gate
 5. Rules-only eval with accuracy gate
 6. `pip-audit`, `bandit`, `gitleaks`
-7. Docker build + Trivy scan (on `main` and release tags)
+7. Docker build, hardened-container smoke test and Trivy scan (every PR and push; Trivy runs as the pinned official container, see ADR-015)
 
 ## Makefile targets
 `make setup | lint | type | test | eval | eval-llm | corpus | run-api | run-ui | run-mcp | docker | audit-deps`

@@ -38,8 +38,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  # Builds both images on every PR so a broken Dockerfile is caught before merge; scans them
-  # with Trivy on main and release tags (docs/07-ENGINEERING-STANDARDS.md).
+  # Builds both images, smoke-tests the hardened API image and scans both with Trivy on every
+  # PR and push, so a broken Dockerfile or a new vulnerable base image is caught before merge.
   image:
     runs-on: ubuntu-latest
     steps:
@@ -59,19 +59,17 @@ jobs:
           curl -fsS http://127.0.0.1:8000/readyz
           test "$(docker exec api id -u)" = "10001"
           docker logs api
-      - name: Trivy scan (API image)
-        if: github.event_name == 'push'
-        uses: aquasecurity/trivy-action@v0.36.0
-        with:
-          image-ref: accesslens-api:ci
-          severity: CRITICAL,HIGH
-          ignore-unfixed: true
-          exit-code: "1"
-      - name: Trivy scan (UI image)
-        if: github.event_name == 'push'
-        uses: aquasecurity/trivy-action@v0.36.0
-        with:
-          image-ref: accesslens-ui:ci
-          severity: CRITICAL,HIGH
-          ignore-unfixed: true
-          exit-code: "1"
+      # Runs the official Trivy container (version pinned) against a saved image, so it needs
+      # no access to the Docker socket. The packaged GitHub Action failed to install Trivy on
+      # the ubuntu-26.04 runner image. Fails on CRITICAL or HIGH findings that have a fix.
+      - name: Trivy scan (API and UI images)
+        run: |
+          status=0
+          for target in api ui; do
+            docker save "accesslens-${target}:ci" -o "/tmp/${target}.tar"
+            echo "== Trivy: ${target} image =="
+            docker run --rm -v "/tmp/${target}.tar:/image.tar:ro" aquasec/trivy:0.70.0 image \
+              --input /image.tar --severity CRITICAL,HIGH --ignore-unfixed --no-progress \
+              --exit-code 1 || status=1
+          done
+          exit $status
