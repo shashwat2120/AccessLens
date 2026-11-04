@@ -66,8 +66,16 @@ def render_report(report: dict) -> None:
             }
             for f in findings
         ],
+        column_config={
+            "Severity": st.column_config.TextColumn("Severity", width="small"),
+            "Rule": st.column_config.TextColumn("Rule", width="small"),
+            "Where": st.column_config.TextColumn("Where", width="large"),
+            "Problem": st.column_config.TextColumn("Problem", width="large"),
+            "How to fix": st.column_config.TextColumn("How to fix", width="large"),
+            "Source": st.column_config.TextColumn("Source", width="small"),
+        },
         hide_index=True,
-        use_container_width=True,
+        width="stretch",
     )
 
 

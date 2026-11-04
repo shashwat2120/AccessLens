@@ -48,6 +48,7 @@ FROM runtime AS ui
 COPY --from=builder-ui --chown=app:app /app/.venv /app/.venv
 COPY --from=builder-ui /opt/nltk_data /opt/nltk_data
 COPY --chown=app:app ui ./ui
+COPY --chown=app:app .streamlit ./.streamlit
 USER 10001:10001
 ENV STREAMLIT_SERVER_HEADLESS=true \
     STREAMLIT_BROWSER_GATHER_USAGE_STATS=false \
