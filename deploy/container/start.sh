@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Starts the API (internal) and the UI (public, port 7860) in one container.
+# Starts the API (internal) and the UI (public, on $PORT) in one container.
 set -euo pipefail
 
 # A one-off key shared only by the two processes in this container. It is never printed,
@@ -11,18 +11,21 @@ export ACCESSLENS_API_KEY API_KEYS_SHA256
 
 uvicorn --factory accesslens.api.main:app_factory --host 127.0.0.1 --port 8000 --proxy-headers &
 
-for _ in $(seq 1 60); do
+for _ in $(seq 1 90); do
   if python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/healthz', timeout=2)" 2>/dev/null; then
     break
   fi
   sleep 1
 done
 
-# XSRF protection is off because the Space shows the app inside an iframe on another origin,
-# where it makes file uploads fail. The app has no logins, cookies or stored data to protect.
+# XSRF protection stays on (Streamlit's default). Only a host that shows the app inside an
+# iframe on another origin needs it off; set ACCESSLENS_DISABLE_XSRF=true for such a host.
+xsrf=true
+if [ "${ACCESSLENS_DISABLE_XSRF:-false}" = "true" ]; then xsrf=false; fi
+
 streamlit run ui/streamlit_app.py \
-  --server.port=7860 --server.address=0.0.0.0 \
-  --server.enableXsrfProtection=false --server.enableCORS=false &
+  --server.port="${PORT:-10000}" --server.address=0.0.0.0 \
+  --server.enableXsrfProtection="$xsrf" --server.enableCORS=false &
 
 # If either process stops, stop the container so the platform restarts it.
 wait -n
