@@ -99,5 +99,5 @@ Documents are never stored, and logs never contain document text. In AI mode, sh
 | [Security policy](SECURITY.md) | How to report a vulnerability |
 | [Changelog](CHANGELOG.md) | What changed |
 
-## License
-MIT
+## License and author
+MIT. Copyright (c) 2026 Shashwat Mishra. See [LICENSE](LICENSE).

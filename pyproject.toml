@@ -4,6 +4,7 @@ version = "0.0.1"
 description = "Audit Word documents for accessibility issues, mapped to WCAG 2.2."
 readme = "README.md"
 license = { text = "MIT" }
+authors = [{ name = "Shashwat Mishra" }]
 requires-python = ">=3.12,<3.13"
 dependencies = [
     "fastapi>=0.162.0",
