@@ -194,4 +194,11 @@ def test_the_audit_service_reports_slide_numbers_for_decks() -> None:
 def test_the_bundled_sample_deck_matches_the_generator() -> None:
     root = Path(__file__).resolve().parents[2]
     bundled = (root / "ui" / "samples" / "sample-team-update.pptx").read_bytes()
-    assert bundled == sample_deck(PNG).to_bytes()
+
+    def contents(data: bytes) -> dict[str, bytes]:
+        # Compare the files inside, not the zip bytes: compression output differs between
+        # zlib versions (Windows and Linux), the content does not.
+        with zipfile.ZipFile(BytesIO(data)) as archive:
+            return {name: archive.read(name) for name in archive.namelist()}
+
+    assert contents(bundled) == contents(sample_deck(PNG).to_bytes())
