@@ -214,8 +214,9 @@ def group_findings(findings: list[dict[str, Any]]) -> list[dict[str, Any]]:
 
 def footer_html() -> str:
     return (
-        '<div class="al-footer">AccessLens is open source (MIT). It checks common problems and is '
-        "not a complete accessibility audit; test important documents with assistive technology. "
+        '<div class="al-footer">AccessLens is open source (MIT), by Shashwat Mishra. '
+        "It checks common problems and is not a complete accessibility audit; "
+        "test important documents with assistive technology. "
         f'<a href="{REPO_URL}" target="_blank" rel="noopener noreferrer">'
         "Source and documentation</a>.</div>"
     )
